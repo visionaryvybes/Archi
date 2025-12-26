@@ -1,0 +1,83 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  color: #e5e7eb;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Enhanced Blueprint Grid */
+.blueprint-grid {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.97) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animate-in {
+  animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* OS UI Depth */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+::selection {
+  background: rgba(99, 102, 241, 0.4);
+  color: white;
+}
+
+input, textarea, select, button {
+  outline: none !important;
+}
+
+/* Smooth Pulse */
+@keyframes arch-pulse {
+  from { opacity: 0.8; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.05); }
+}
+
+.animate-arch {
+  animation: arch-pulse 10s ease-in-out infinite alternate;
+}
+
+/* Custom transitions */
+.transition-all {
+  transition-duration: 500ms;
+}
+
+/* Scoped scroll for workspace */
+.h-screen {
+  height: 100vh;
+}
