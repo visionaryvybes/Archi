@@ -1,24 +1,25 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { Building2, Home, Layers, Palette, Sofa, Landmark, Castle, Warehouse, Store, Building, Sparkles, PenTool } from 'lucide-react'
 
-const companyTypes = [
-  'Tech Startup',
-  'Design Agency',
-  'Architecture Firm',
-  'Real Estate Co.',
-  'Interior Studio',
-  'Property Developer',
-  'Home Staging',
-  'Renovation Co.',
-  'Furniture Brand',
-  'Smart Home Co.',
-  'Luxury Homes',
-  'Commercial Design',
+const companies = [
+  { name: 'ArchStudio', icon: Building2 },
+  { name: 'HomeCraft', icon: Home },
+  { name: 'LayerSpace', icon: Layers },
+  { name: 'Colorhive', icon: Palette },
+  { name: 'Furnish+', icon: Sofa },
+  { name: 'Heritage Design', icon: Landmark },
+  { name: 'LuxLiving', icon: Castle },
+  { name: 'SpaceWorks', icon: Warehouse },
+  { name: 'StudioRetail', icon: Store },
+  { name: 'MetroDesign', icon: Building },
+  { name: 'Visualize', icon: Sparkles },
+  { name: 'DesignPen', icon: PenTool },
 ]
 
 // Duplicate for seamless loop
-const allCompanies = [...companyTypes, ...companyTypes]
+const allCompanies = [...companies, ...companies]
 
 export function TrustBar() {
   return (
@@ -65,24 +66,24 @@ export function TrustBar() {
                 },
               }}
             >
-              {allCompanies.map((company, index) => (
-                <div
-                  key={`${company}-${index}`}
-                  className="flex-shrink-0 group cursor-default"
-                >
-                  <div className="flex items-center gap-3 px-6 py-3 rounded-lg transition-all duration-300 hover:bg-white/5">
-                    {/* Placeholder logo shape */}
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center group-hover:border-white/20 transition-colors">
-                      <span className="text-xs font-bold text-white/40 group-hover:text-white/60 transition-colors">
-                        {company.charAt(0)}
+              {allCompanies.map((company, index) => {
+                const Icon = company.icon
+                return (
+                  <div
+                    key={`${company.name}-${index}`}
+                    className="flex-shrink-0 group cursor-default"
+                  >
+                    <div className="flex items-center gap-3 px-6 py-3 rounded-lg transition-all duration-300 hover:bg-white/5">
+                      <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center group-hover:border-emerald-500/30 group-hover:from-emerald-500/10 group-hover:to-cyan-500/10 transition-all duration-300">
+                        <Icon className="w-4 h-4 text-white/50 group-hover:text-emerald-400 transition-colors" />
+                      </div>
+                      <span className="text-white/50 font-medium text-sm whitespace-nowrap group-hover:text-white transition-colors">
+                        {company.name}
                       </span>
                     </div>
-                    <span className="text-white/40 font-medium text-sm whitespace-nowrap group-hover:text-white/70 transition-colors">
-                      {company}
-                    </span>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </motion.div>
           </div>
         </div>

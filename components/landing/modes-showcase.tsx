@@ -73,34 +73,38 @@ const modes: Mode[] = [
 function ImageModePreview() {
   return (
     <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900/50">
-      {/* Before/After mockup */}
+      {/* Before/After with real images */}
       <div className="absolute inset-0 flex">
-        <div className="w-1/2 bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-2 rounded-lg bg-slate-700/50 flex items-center justify-center">
-              <Image className="w-8 h-8 text-slate-500" />
-            </div>
-            <span className="text-xs text-slate-500">Original</span>
+        <div className="w-1/2 relative">
+          <img
+            src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop&q=80"
+            alt="Before"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute bottom-2 left-2 px-2 py-1 rounded bg-black/60 text-xs text-white">
+            Original
           </div>
         </div>
-        <div className="w-1/2 bg-gradient-to-br from-emerald-900/30 to-cyan-900/30 flex items-center justify-center border-l border-emerald-500/30">
-          <div className="text-center">
-            <motion.div
-              className="w-16 h-16 mx-auto mb-2 rounded-lg bg-gradient-to-br from-emerald-500/30 to-cyan-500/30 flex items-center justify-center"
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <Image className="w-8 h-8 text-emerald-400" />
-            </motion.div>
-            <span className="text-xs text-emerald-400">Redesigned</span>
+        <div className="w-1/2 relative border-l-2 border-emerald-500">
+          <img
+            src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=400&h=300&fit=crop&q=80"
+            alt="After"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute bottom-2 right-2 px-2 py-1 rounded bg-gradient-to-r from-emerald-500 to-cyan-500 text-xs text-white">
+            Redesigned
           </div>
         </div>
       </div>
-      {/* Center divider */}
-      <div className="absolute inset-y-0 left-1/2 w-0.5 bg-gradient-to-b from-emerald-500 to-cyan-500">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center shadow-glow">
+      {/* Center arrow */}
+      <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 flex items-center">
+        <motion.div
+          className="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center shadow-glow"
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
           <ArrowRight className="w-4 h-4 text-white" />
-        </div>
+        </motion.div>
       </div>
     </div>
   );
@@ -108,7 +112,15 @@ function ImageModePreview() {
 
 function VideoModePreview() {
   return (
-    <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900/50">
+    <div className="relative aspect-video rounded-xl overflow-hidden">
+      {/* Background image */}
+      <img
+        src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=600&h=400&fit=crop&q=80"
+        alt="Room preview"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+      <div className="absolute inset-0 bg-black/40" />
+
       {/* Video preview mockup */}
       <div className="absolute inset-0 flex items-center justify-center">
         <motion.div
@@ -117,15 +129,14 @@ function VideoModePreview() {
           transition={{ duration: 3, repeat: Infinity }}
         >
           {/* Play button */}
-          <div className="w-20 h-20 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center shadow-glow-lg">
-            <div className="w-0 h-0 border-t-8 border-t-transparent border-l-12 border-l-white border-b-8 border-b-transparent ml-1"
-              style={{ borderLeftWidth: '14px' }} />
+          <div className="w-20 h-20 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center shadow-glow-lg cursor-pointer hover:scale-105 transition-transform">
+            <div className="w-0 h-0 border-t-8 border-t-transparent border-l-[14px] border-l-white border-b-8 border-b-transparent ml-1" />
           </div>
           {/* Pulse rings */}
           {[1, 2, 3].map((ring) => (
             <motion.div
               key={ring}
-              className="absolute inset-0 rounded-full border border-emerald-500/30"
+              className="absolute inset-0 rounded-full border border-white/30"
               animate={{
                 scale: [1, 1.5 + ring * 0.3],
                 opacity: [0.6, 0],
@@ -141,7 +152,7 @@ function VideoModePreview() {
       </div>
       {/* Video timeline */}
       <div className="absolute bottom-4 left-4 right-4">
-        <div className="h-1 bg-slate-700 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
           <motion.div
             className="h-full bg-gradient-to-r from-emerald-500 to-cyan-500"
             initial={{ width: '0%' }}
@@ -149,7 +160,7 @@ function VideoModePreview() {
             transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
           />
         </div>
-        <div className="flex justify-between mt-1 text-xs text-slate-500">
+        <div className="flex justify-between mt-1.5 text-xs text-white/70">
           <span>0:00</span>
           <span>0:45</span>
         </div>
@@ -160,41 +171,47 @@ function VideoModePreview() {
 
 function ThreeDModePreview() {
   return (
-    <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900/50">
-      {/* 3D cube animation */}
-      <div className="absolute inset-0 flex items-center justify-center perspective-1000">
+    <div className="relative aspect-video rounded-xl overflow-hidden">
+      {/* Background image */}
+      <img
+        src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop&q=80"
+        alt="3D Room"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/60 to-cyan-900/60" />
+
+      {/* 3D indicator */}
+      <div className="absolute inset-0 flex items-center justify-center">
         <motion.div
-          className="relative w-24 h-24"
-          style={{ transformStyle: 'preserve-3d' }}
-          animate={{ rotateY: 360, rotateX: 15 }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+          className="relative"
+          animate={{ rotateY: [0, 15, 0, -15, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ perspective: '1000px' }}
         >
-          {/* Cube faces */}
-          {['front', 'back', 'top', 'bottom', 'left', 'right'].map((face, i) => {
-            const transforms: Record<string, string> = {
-              front: 'translateZ(48px)',
-              back: 'translateZ(-48px) rotateY(180deg)',
-              top: 'translateY(-48px) rotateX(90deg)',
-              bottom: 'translateY(48px) rotateX(-90deg)',
-              left: 'translateX(-48px) rotateY(-90deg)',
-              right: 'translateX(48px) rotateY(90deg)',
-            };
-            return (
-              <div
-                key={face}
-                className="absolute inset-0 border border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 backdrop-blur-sm"
-                style={{ transform: transforms[face] }}
-              />
-            );
-          })}
+          <div className="w-32 h-32 border-2 border-white/40 rounded-xl flex items-center justify-center backdrop-blur-sm bg-white/5">
+            <Box className="w-12 h-12 text-white" />
+          </div>
         </motion.div>
+
+        {/* Orbit rings */}
+        <motion.div
+          className="absolute w-48 h-48 border border-dashed border-emerald-500/40 rounded-full"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+        />
+        <motion.div
+          className="absolute w-56 h-56 border border-dashed border-cyan-500/30 rounded-full"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+        />
       </div>
+
       {/* Control indicators */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
         {['Rotate', 'Zoom', 'Pan'].map((control) => (
           <div
             key={control}
-            className="px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/50 text-xs text-slate-400"
+            className="px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 text-xs text-white/80 hover:bg-white/10 cursor-pointer transition-colors"
           >
             {control}
           </div>

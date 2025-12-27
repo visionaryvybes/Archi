@@ -1,21 +1,37 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Palette, Sparkles, ChevronLeft, ChevronRight, X, Loader2, AlertCircle } from 'lucide-react';
+import { Upload, Palette, Sparkles, ChevronLeft, ChevronRight, X, Loader2, AlertCircle, Check } from 'lucide-react';
 
 const DEMO_LIMIT = 3;
 const STORAGE_KEY = 'visionary-demo-count';
 
+// Demo images from Unsplash
+const DEMO_IMAGES = {
+  before: 'https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=800&h=600&fit=crop&q=80',
+  results: {
+    modern: 'https://images.unsplash.com/photo-1600210492493-0946911123ea?w=800&h=600&fit=crop&q=80',
+    minimalist: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop&q=80',
+    industrial: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&q=80',
+    scandinavian: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&h=600&fit=crop&q=80',
+    bohemian: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800&h=600&fit=crop&q=80',
+    'mid-century': 'https://images.unsplash.com/photo-1600121848594-d8644e57abab?w=800&h=600&fit=crop&q=80',
+    coastal: 'https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=800&h=600&fit=crop&q=80',
+    rustic: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&h=600&fit=crop&q=80',
+  } as Record<string, string>
+};
+
 const styles = [
-  { id: 'modern', name: 'Modern', color: 'from-slate-600 to-slate-800' },
-  { id: 'minimalist', name: 'Minimalist', color: 'from-gray-500 to-gray-700' },
-  { id: 'industrial', name: 'Industrial', color: 'from-amber-700 to-stone-800' },
-  { id: 'scandinavian', name: 'Scandinavian', color: 'from-amber-100 to-stone-300' },
-  { id: 'bohemian', name: 'Bohemian', color: 'from-orange-400 to-pink-500' },
-  { id: 'mid-century', name: 'Mid-Century', color: 'from-amber-500 to-teal-600' },
-  { id: 'coastal', name: 'Coastal', color: 'from-sky-400 to-blue-600' },
-  { id: 'rustic', name: 'Rustic', color: 'from-amber-600 to-stone-700' },
+  { id: 'modern', name: 'Modern', color: 'from-slate-600 to-slate-800', image: 'https://images.unsplash.com/photo-1600210492493-0946911123ea?w=200&h=200&fit=crop&q=60' },
+  { id: 'minimalist', name: 'Minimalist', color: 'from-gray-500 to-gray-700', image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=200&h=200&fit=crop&q=60' },
+  { id: 'industrial', name: 'Industrial', color: 'from-amber-700 to-stone-800', image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&h=200&fit=crop&q=60' },
+  { id: 'scandinavian', name: 'Scandinavian', color: 'from-amber-100 to-stone-300', image: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=200&h=200&fit=crop&q=60' },
+  { id: 'bohemian', name: 'Bohemian', color: 'from-orange-400 to-pink-500', image: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=200&h=200&fit=crop&q=60' },
+  { id: 'mid-century', name: 'Mid-Century', color: 'from-amber-500 to-teal-600', image: 'https://images.unsplash.com/photo-1600121848594-d8644e57abab?w=200&h=200&fit=crop&q=60' },
+  { id: 'coastal', name: 'Coastal', color: 'from-sky-400 to-blue-600', image: 'https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=200&h=200&fit=crop&q=60' },
+  { id: 'rustic', name: 'Rustic', color: 'from-amber-600 to-stone-700', image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=200&h=200&fit=crop&q=60' },
 ];
 
 interface Step {
@@ -86,31 +102,29 @@ function BeforeAfterSlider({
       onTouchEnd={() => setIsDragging(false)}
     >
       {/* Before image (full width) */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <Upload className="w-12 h-12 mx-auto text-slate-600 mb-2" />
-            <span className="text-sm text-slate-500">Original Room</span>
-          </div>
-        </div>
+      <div className="absolute inset-0">
+        <img
+          src={beforeImage}
+          alt="Before"
+          className="w-full h-full object-cover"
+        />
       </div>
 
       {/* After image (clipped) */}
       <div
-        className="absolute inset-0 bg-gradient-to-br from-emerald-900/50 to-cyan-900/50"
+        className="absolute inset-0"
         style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
       >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <Sparkles className="w-12 h-12 mx-auto text-emerald-400 mb-2" />
-            <span className="text-sm text-emerald-400">AI Redesigned</span>
-          </div>
-        </div>
+        <img
+          src={afterImage}
+          alt="After"
+          className="w-full h-full object-cover"
+        />
       </div>
 
       {/* Slider handle */}
       <div
-        className="absolute inset-y-0 w-1 bg-white cursor-col-resize"
+        className="absolute inset-y-0 w-1 bg-white cursor-col-resize shadow-[0_0_10px_rgba(255,255,255,0.5)]"
         style={{ left: `${sliderPosition}%`, transform: 'translateX(-50%)' }}
         onMouseDown={() => setIsDragging(true)}
         onTouchStart={() => setIsDragging(true)}
@@ -122,10 +136,10 @@ function BeforeAfterSlider({
       </div>
 
       {/* Labels */}
-      <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/50 backdrop-blur-sm text-xs text-white">
+      <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-xs font-medium text-white">
         Before
       </div>
-      <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-gradient-to-r from-emerald-500/80 to-cyan-500/80 backdrop-blur-sm text-xs text-white">
+      <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 backdrop-blur-sm text-xs font-medium text-white">
         After
       </div>
     </div>
@@ -359,17 +373,26 @@ export function DemoSection() {
                       onClick={() => handleStyleSelect(style.id)}
                       className={`relative aspect-square rounded-xl overflow-hidden group ${
                         selectedStyle === style.id
-                          ? 'ring-2 ring-emerald-500'
+                          ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-black'
                           : ''
                       }`}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
                     >
-                      <div className={`absolute inset-0 bg-gradient-to-br ${style.color}`} />
-                      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-white font-medium text-sm">{style.name}</span>
+                      <img
+                        src={style.image}
+                        alt={style.name}
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 flex items-end justify-center pb-3">
+                        <span className="text-white font-medium text-sm drop-shadow-lg">{style.name}</span>
                       </div>
+                      {selectedStyle === style.id && (
+                        <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
+                          <Check className="w-4 h-4 text-white" />
+                        </div>
+                      )}
                     </motion.button>
                   ))}
                 </div>
@@ -460,8 +483,8 @@ export function DemoSection() {
                 </div>
 
                 <BeforeAfterSlider
-                  beforeImage={uploadedImage || ''}
-                  afterImage=""
+                  beforeImage={uploadedImage || DEMO_IMAGES.before}
+                  afterImage={selectedStyle ? DEMO_IMAGES.results[selectedStyle] : DEMO_IMAGES.results.modern}
                 />
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">

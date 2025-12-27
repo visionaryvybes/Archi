@@ -15,6 +15,10 @@ interface ComparisonSliderProps {
   autoPlayDuration?: number
 }
 
+// Default demo images from Unsplash (high-quality interior design photos)
+const DEFAULT_BEFORE = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&h=800&fit=crop&q=80'
+const DEFAULT_AFTER = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200&h=800&fit=crop&q=80'
+
 export function ComparisonSlider({
   beforeImage,
   afterImage,
@@ -152,23 +156,12 @@ export function ComparisonSlider({
     >
       {/* Before Image (Full width, visible on the right side) */}
       <div className="absolute inset-0">
-        {beforeImage ? (
-          <img
-            src={beforeImage}
-            alt={beforeAlt}
-            className="w-full h-full object-cover"
-            draggable={false}
-          />
-        ) : (
-          <div className="w-full h-full bg-slate-900 flex items-center justify-center">
-            <div className="text-center">
-              <div className="w-32 h-32 mx-auto mb-4 rounded-xl bg-slate-800 flex items-center justify-center">
-                <div className="w-16 h-16 border-2 border-dashed border-slate-600 rounded-lg" />
-              </div>
-              <span className="text-slate-500 font-mono text-sm">Before Image</span>
-            </div>
-          </div>
-        )}
+        <img
+          src={beforeImage || DEFAULT_BEFORE}
+          alt={beforeAlt}
+          className="w-full h-full object-cover"
+          draggable={false}
+        />
       </div>
 
       {/* After Image (Clipped) */}
@@ -178,23 +171,12 @@ export function ComparisonSlider({
           clipPath: useTransform(clipPercentage, (p) => `inset(0 ${100 - p}% 0 0)`),
         }}
       >
-        {afterImage ? (
-          <img
-            src={afterImage}
-            alt={afterAlt}
-            className="w-full h-full object-cover"
-            draggable={false}
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-emerald-950/50 via-cyan-950/50 to-blue-950/50 flex items-center justify-center">
-            <div className="text-center">
-              <div className="w-32 h-32 mx-auto mb-4 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 flex items-center justify-center border border-emerald-500/30">
-                <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-emerald-500/40 to-cyan-500/40" />
-              </div>
-              <span className="text-emerald-400 font-mono text-sm">After Image</span>
-            </div>
-          </div>
-        )}
+        <img
+          src={afterImage || DEFAULT_AFTER}
+          alt={afterAlt}
+          className="w-full h-full object-cover"
+          draggable={false}
+        />
       </motion.div>
 
       {/* Slider Handle */}
