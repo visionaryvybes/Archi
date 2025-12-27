@@ -1,22 +1,56 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Settings, Camera, Terminal, Sparkles, X, Layers, ChevronDown, Check, ChevronRight, Cpu, Upload, Loader2, Maximize2 } from 'lucide-react'
+import { Settings, Camera, ChevronUp, ChevronDown, X, Layers, ChevronRight, Cpu, Upload, Loader2, Maximize2 } from 'lucide-react'
 
 type AppState = 'idle' | 'loading' | 'success' | 'error'
-type AspectRatio = '16:9' | '1:1' | '9:16'
-type Quality = '1K' | '2K' | '4K'
 
-const ROOM_TYPES = ['Living Room', 'Bedroom', 'Kitchen', 'Bathroom', 'Dining Room', 'Office', 'Exterior']
-const DESIGN_STYLES = ['Modern', 'Minimalist', 'Industrial', 'Scandinavian', 'Bohemian', 'Mid-Century', 'Coastal', 'Rustic', 'Contemporary', 'Luxury']
+const MACRO_ENGINE_OPTIONS = [
+  'INTERIOR DESIGN',
+  'EXTERIOR/ARCHITECTURAL',
+  '2D/3D FLOOR PLAN',
+  'TECHNICAL BLUEPRINT',
+  'LANDSCAPE/GARDEN',
+  'MATERIAL STUDY',
+  'RE-RENDER SOURCE'
+]
+
+const SPATIAL_DOMAIN_OPTIONS = [
+  'LIVING ROOM',
+  'KITCHEN / CULINARY',
+  'MASTER SUITE',
+  'SPA / BATHROOM',
+  'HOME OFFICE / STUDIO',
+  'HOME CINEMA',
+  'WELLNESS / GYM'
+]
+
+const AESTHETIC_MATRIX_OPTIONS = [
+  'MODERN MINIMALIST',
+  'SCANDINAVIAN',
+  'INDUSTRIAL',
+  'BAUHAUS',
+  'BRUTALIST',
+  'CLASSIC EUROPEAN',
+  'BIOPHILIC/ORGANIC'
+]
 
 export default function StudioPage() {
   const [state, setState] = useState<AppState>('idle')
   const [prompt, setPrompt] = useState('')
-  const [roomType, setRoomType] = useState('Living Room')
-  const [designStyle, setDesignStyle] = useState('Modern')
-  const [aspectRatio, setAspectRatio] = useState<AspectRatio>('16:9')
-  const [quality, setQuality] = useState<Quality>('2K')
+
+  // Expandable sections
+  const [macroEngineOpen, setMacroEngineOpen] = useState(true)
+  const [spatialDomainOpen, setSpatialDomainOpen] = useState(true)
+  const [aestheticMatrixOpen, setAestheticMatrixOpen] = useState(true)
+
+  // Selections
+  const [macroEngine, setMacroEngine] = useState('INTERIOR DESIGN')
+  const [spatialDomain, setSpatialDomain] = useState('LIVING ROOM')
+  const [aestheticMatrix, setAestheticMatrix] = useState('MODERN MINIMALIST')
+  const [aspectRatio, setAspectRatio] = useState('16:9')
+  const [fidelity, setFidelity] = useState('1K SD')
+
   const [sourceImage, setSourceImage] = useState<string | null>(null)
   const [generatedImage, setGeneratedImage] = useState<string | null>(null)
   const [isEnlarged, setIsEnlarged] = useState(false)
@@ -43,8 +77,8 @@ export default function StudioPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `${roomType} in ${designStyle} style. ${prompt}`,
-          style: designStyle.toLowerCase(),
+          prompt: `${spatialDomain} in ${aestheticMatrix} style. ${macroEngine}. ${prompt}`,
+          style: aestheticMatrix.toLowerCase(),
           imageBase64,
           aspectRatio
         })
@@ -74,8 +108,8 @@ export default function StudioPage() {
             <div>
               <h1 className="text-xs font-black tracking-[0.3em] text-white uppercase">Visionary Studio</h1>
               <div className="flex items-center gap-2 mt-1">
-                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                <span className="text-[8px] font-black text-emerald-500/60 uppercase tracking-[0.2em]">CONNECTED v2.0</span>
+                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></div>
+                <span className="text-[8px] font-black text-indigo-500/60 uppercase tracking-[0.2em]">CONNECTED v2.0</span>
               </div>
             </div>
           </a>
@@ -84,7 +118,7 @@ export default function StudioPage() {
         <div className="flex items-center gap-8">
           <div className="flex flex-col items-end">
             <span className="text-[7px] font-black text-gray-600 uppercase tracking-widest">TELEMETRY</span>
-            <span className="text-[10px] font-mono text-emerald-500">READY</span>
+            <span className="text-[10px] font-mono text-green-500">READY</span>
           </div>
           <button className="p-3 bg-white/5 rounded-xl text-gray-500 hover:text-white transition-all">
             <Settings size={18} />
@@ -96,10 +130,10 @@ export default function StudioPage() {
         {/* Left Sidebar - Controls */}
         <aside className="w-[420px] border-r border-white/5 bg-[#080808] flex flex-col overflow-y-auto shrink-0 z-20 shadow-2xl scrollbar-hide">
           <form onSubmit={handleGenerate} className="flex flex-col h-full">
-            <div className="p-10 space-y-10 pb-40">
+            <div className="p-10 space-y-8 pb-40">
               {/* Header */}
               <div className="flex items-center gap-4 px-2 py-4 border-b border-white/5">
-                <div className="p-3 bg-white/5 rounded-2xl"><Cpu size={18} className="text-emerald-400" /></div>
+                <div className="p-3 bg-white/5 rounded-2xl"><Cpu size={18} className="text-indigo-400" /></div>
                 <div>
                   <span className="text-[10px] font-black text-white uppercase tracking-[0.4em]">CONSOLE v2.0</span>
                   <p className="text-[7px] font-black text-gray-600 uppercase tracking-widest mt-1">CORE ACTIVE</p>
@@ -108,43 +142,78 @@ export default function StudioPage() {
 
               {/* Prompt */}
               <section>
-                <div className="flex items-center justify-between mb-4 px-1">
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <Terminal size={14} />
-                    <span className="text-[9px] font-black uppercase tracking-[0.4em]">Design Brief</span>
-                  </div>
-                  <button
-                    type="button"
-                    className="flex items-center gap-2 px-4 py-2 bg-white/[0.03] hover:bg-white/10 border border-white/10 rounded-full text-[8px] font-black uppercase tracking-widest text-gray-500 transition-all"
-                  >
-                    <Sparkles size={11} className="text-amber-500" />
-                    Enhance
-                  </button>
+                <div className="flex items-center gap-3 text-gray-700 px-1 mb-4">
+                  <span className="text-[9px] font-black uppercase tracking-[0.4em]">Design Directive</span>
                 </div>
                 <textarea
                   value={prompt}
                   onChange={e => setPrompt(e.target.value)}
-                  placeholder="Describe the interior design you want to create..."
-                  className="w-full h-40 bg-white/[0.01] border border-white/5 rounded-3xl p-8 text-[12px] font-light text-gray-300 outline-none focus:border-emerald-500/30 focus:bg-white/[0.03] transition-all resize-none leading-relaxed shadow-inner placeholder:text-gray-800"
+                  placeholder="Materiality, illumination, spatial flow..."
+                  className="w-full h-40 bg-white/[0.01] border border-white/5 rounded-3xl p-8 text-[12px] font-light text-gray-300 outline-none focus:border-indigo-500/30 focus:bg-white/[0.03] transition-all resize-none leading-relaxed shadow-inner placeholder:text-gray-800"
                 />
               </section>
 
-              {/* Room Type */}
-              <Select label="Room Type" value={roomType} options={ROOM_TYPES} onChange={setRoomType} />
+              {/* Macro Engine */}
+              <CollapsibleSection
+                label="MACRO ENGINE"
+                isOpen={macroEngineOpen}
+                onToggle={() => setMacroEngineOpen(!macroEngineOpen)}
+                selected={macroEngine}
+              >
+                {MACRO_ENGINE_OPTIONS.map((option) => (
+                  <RadioOption
+                    key={option}
+                    label={option}
+                    selected={macroEngine === option}
+                    onClick={() => setMacroEngine(option)}
+                  />
+                ))}
+              </CollapsibleSection>
 
-              {/* Design Style */}
-              <Select label="Design Style" value={designStyle} options={DESIGN_STYLES} onChange={setDesignStyle} />
+              {/* Spatial Domain */}
+              <CollapsibleSection
+                label="SPATIAL DOMAIN"
+                isOpen={spatialDomainOpen}
+                onToggle={() => setSpatialDomainOpen(!spatialDomainOpen)}
+                selected={spatialDomain}
+              >
+                {SPATIAL_DOMAIN_OPTIONS.map((option) => (
+                  <RadioOption
+                    key={option}
+                    label={option}
+                    selected={spatialDomain === option}
+                    onClick={() => setSpatialDomain(option)}
+                  />
+                ))}
+              </CollapsibleSection>
 
-              {/* Aspect Ratio */}
+              {/* Aesthetic Matrix */}
+              <CollapsibleSection
+                label="AESTHETIC MATRIX"
+                isOpen={aestheticMatrixOpen}
+                onToggle={() => setAestheticMatrixOpen(!aestheticMatrixOpen)}
+                selected={aestheticMatrix}
+              >
+                {AESTHETIC_MATRIX_OPTIONS.map((option) => (
+                  <RadioOption
+                    key={option}
+                    label={option}
+                    selected={aestheticMatrix === option}
+                    onClick={() => setAestheticMatrix(option)}
+                  />
+                ))}
+              </CollapsibleSection>
+
+              {/* Viewport Proportion */}
               <div>
-                <label className="block text-[8px] font-black uppercase tracking-[0.5em] text-gray-700 mb-4 ml-1">Aspect Ratio</label>
-                <div className="flex p-1.5 bg-white/[0.02] border border-white/5 rounded-2xl shadow-inner">
-                  {(['16:9', '1:1', '9:16'] as AspectRatio[]).map((ratio) => (
+                <label className="block text-[8px] font-black uppercase tracking-[0.5em] text-gray-700 mb-4 ml-1">Viewport Proportion</label>
+                <div className="flex gap-4">
+                  {['16:9', '1:1', '9:16'].map((ratio) => (
                     <button
                       key={ratio}
                       type="button"
                       onClick={() => setAspectRatio(ratio)}
-                      className={`flex-1 py-4 text-[9px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${aspectRatio === ratio ? 'bg-white text-black shadow-2xl scale-[1.02]' : 'text-gray-600 hover:text-white hover:bg-white/5'}`}
+                      className={`flex-1 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-all ${aspectRatio === ratio ? 'bg-white text-black shadow-2xl' : 'bg-white/5 text-gray-600 hover:text-white hover:bg-white/10'}`}
                     >
                       {ratio}
                     </button>
@@ -152,28 +221,28 @@ export default function StudioPage() {
                 </div>
               </div>
 
-              {/* Quality */}
+              {/* Fidelity Level */}
               <div>
-                <label className="block text-[8px] font-black uppercase tracking-[0.5em] text-gray-700 mb-4 ml-1">Quality</label>
-                <div className="flex p-1.5 bg-white/[0.02] border border-white/5 rounded-2xl shadow-inner">
-                  {(['1K', '2K', '4K'] as Quality[]).map((q) => (
+                <label className="block text-[8px] font-black uppercase tracking-[0.5em] text-gray-700 mb-4 ml-1">Fidelity Level</label>
+                <div className="flex gap-4">
+                  {['1K SD', '2K HD', '4K ULTRA'].map((qual) => (
                     <button
-                      key={q}
+                      key={qual}
                       type="button"
-                      onClick={() => setQuality(q)}
-                      className={`flex-1 py-4 text-[9px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${quality === q ? 'bg-white text-black shadow-2xl scale-[1.02]' : 'text-gray-600 hover:text-white hover:bg-white/5'}`}
+                      onClick={() => setFidelity(qual)}
+                      className={`flex-1 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-all ${fidelity === qual ? 'bg-white text-black shadow-2xl' : 'bg-white/5 text-gray-600 hover:text-white hover:bg-white/10'}`}
                     >
-                      {q}
+                      {qual}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Image Upload */}
+              {/* Context Seeding */}
               <section>
                 <div className="flex items-center gap-3 text-gray-700 px-1 mb-6">
                   <Layers size={14} />
-                  <span className="text-[9px] font-black uppercase tracking-[0.4em]">Source Image</span>
+                  <span className="text-[9px] font-black uppercase tracking-[0.4em]">Context Seeding</span>
                 </div>
                 {sourceImage ? (
                   <div className="relative group aspect-video rounded-3xl overflow-hidden border border-white/10 bg-black/40 shadow-2xl">
@@ -190,14 +259,14 @@ export default function StudioPage() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full py-16 bg-white/[0.01] border border-dashed border-white/10 rounded-[4rem] flex flex-col items-center justify-center gap-6 hover:bg-white/[0.03] hover:border-emerald-500/40 transition-all group shadow-inner"
+                    className="w-full py-16 bg-white/[0.01] border border-dashed border-white/10 rounded-[4rem] flex flex-col items-center justify-center gap-6 hover:bg-white/[0.03] hover:border-indigo-500/40 transition-all group shadow-inner"
                   >
                     <div className="p-6 bg-white/5 rounded-[2rem] group-hover:scale-110 transition-transform shadow-2xl">
-                      <Camera size={40} className="text-gray-700 group-hover:text-emerald-500 transition-colors" />
+                      <Camera size={40} className="text-gray-700 group-hover:text-indigo-500 transition-colors" />
                     </div>
                     <div className="text-center">
-                      <span className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-600 block mb-2">Upload Image</span>
-                      <span className="text-[7px] font-black text-gray-800 uppercase tracking-widest">DRAG & DROP SUPPORTED</span>
+                      <span className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-600 block mb-2">Import context photo</span>
+                      <span className="text-[7px] font-black text-gray-800 uppercase tracking-widest">DRAG AND DROP SUPPORTED</span>
                     </div>
                     <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
                   </button>
@@ -215,7 +284,7 @@ export default function StudioPage() {
                 {state === 'loading' ? (
                   <div className="flex items-center gap-5">
                     <Loader2 size={24} className="animate-spin" />
-                    <span>GENERATING...</span>
+                    <span>INITIALIZING...</span>
                   </div>
                 ) : (
                   <>
@@ -236,9 +305,9 @@ export default function StudioPage() {
                 <Upload size={64} className="text-gray-800" />
               </div>
               <div className="space-y-4">
-                <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Ready for Input</h2>
+                <h2 className="text-4xl font-black text-white uppercase tracking-tighter">OS_READY_FOR_INPUT</h2>
                 <p className="text-gray-600 text-[10px] font-black uppercase tracking-[0.5em] leading-loose max-w-sm mx-auto">
-                  Configure parameters and execute render to begin
+                  Define spatial vectors in the configuration console to begin architectural synthesis.
                 </p>
               </div>
             </div>
@@ -246,7 +315,7 @@ export default function StudioPage() {
 
           {state === 'loading' && (
             <div className="text-center space-y-8">
-              <Loader2 size={64} className="animate-spin text-emerald-500 mx-auto" />
+              <Loader2 size={64} className="animate-spin text-indigo-500 mx-auto" />
               <p className="text-xl font-black text-white uppercase tracking-widest">Generating...</p>
             </div>
           )}
@@ -304,36 +373,72 @@ export default function StudioPage() {
   )
 }
 
-function Select({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (val: string) => void }) {
-  const [isOpen, setIsOpen] = useState(false)
-
+function CollapsibleSection({
+  label,
+  isOpen,
+  onToggle,
+  selected,
+  children
+}: {
+  label: string
+  isOpen: boolean
+  onToggle: () => void
+  selected: string
+  children: React.ReactNode
+}) {
   return (
-    <div className="relative">
-      <label className="block text-[8px] font-black uppercase tracking-[0.5em] text-gray-700 mb-4 ml-1">{label}</label>
+    <div>
+      <div className="px-1 mb-4">
+        <span className="text-[8px] font-black uppercase tracking-[0.5em] text-gray-700">{label}</span>
+      </div>
+
+      {/* Collapsed Header */}
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-8 py-6 bg-white/[0.02] border border-white/5 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] transition-all hover:bg-white/5 text-left group"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-8 py-6 bg-white/[0.02] border border-white/5 rounded-3xl text-left group hover:bg-white/5 transition-all mb-4"
       >
-        <span className="text-gray-300 group-hover:text-white transition-colors">{value}</span>
-        <ChevronDown size={14} className={`transition-transform duration-500 ${isOpen ? 'rotate-180' : ''} text-gray-700 group-hover:text-white`} />
+        <span className="text-[11px] font-black uppercase tracking-[0.3em] text-indigo-400 group-hover:text-indigo-300 transition-colors">
+          {selected}
+        </span>
+        {isOpen ? (
+          <ChevronUp size={16} className="text-gray-700 group-hover:text-white transition-colors" />
+        ) : (
+          <ChevronDown size={16} className="text-gray-700 group-hover:text-white transition-colors" />
+        )}
       </button>
 
+      {/* Expanded Options */}
       {isOpen && (
-        <div className="absolute z-[60] w-full mt-4 bg-[#0c0c0e] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-[0_20px_100px_rgba(0,0,0,0.8)] backdrop-blur-3xl max-h-64 overflow-y-auto scrollbar-hide">
-          {options.map((opt) => (
-            <button
-              key={opt}
-              type="button"
-              onClick={() => { onChange(opt); setIsOpen(false); }}
-              className={`w-full flex items-center justify-between px-8 py-5 text-[9px] font-black uppercase tracking-[0.2em] text-left hover:bg-white/5 transition-colors border-b border-white/5 last:border-none ${value === opt ? 'text-white bg-white/5' : 'text-gray-600'}`}
-            >
-              {opt}
-              {value === opt && <Check size={14} className="text-emerald-500" />}
-            </button>
-          ))}
+        <div className="bg-white/[0.01] border border-white/5 rounded-[3rem] p-2 mb-4 shadow-inner">
+          {children}
         </div>
       )}
     </div>
+  )
+}
+
+function RadioOption({
+  label,
+  selected,
+  onClick
+}: {
+  label: string
+  selected: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="w-full flex items-center justify-between px-8 py-5 text-left hover:bg-white/5 transition-colors rounded-2xl border-b border-white/5 last:border-none"
+    >
+      <span className={`text-[11px] font-black uppercase tracking-[0.2em] ${selected ? 'text-white' : 'text-gray-600'}`}>
+        {label}
+      </span>
+      {selected && (
+        <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></div>
+      )}
+    </button>
   )
 }
