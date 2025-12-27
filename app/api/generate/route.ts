@@ -181,10 +181,6 @@ EXECUTION MANDATE: Generate a stunning, photorealistic ${renderType.toLowerCase(
       contents,
       config: {
         responseModalities: ['image', 'text'],
-        imageConfig: {
-          aspectRatio: ASPECT_RATIO_MAP[aspectRatio] || '16:9',
-          imageSize: IMAGE_SIZE_MAP[quality] || '2K'
-        }
       },
     })
 
