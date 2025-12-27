@@ -65,6 +65,13 @@ const QUALITY_MAP: Record<string, string> = {
   '4K UHD': 'Ultra high definition, 4096x2304 resolution, maximum fidelity, photorealistic detail'
 }
 
+// Map quality to Gemini imageSize parameter
+const IMAGE_SIZE_MAP: Record<string, string> = {
+  '1K SD': '1K',
+  '2K HD': '2K',
+  '4K UHD': '4K'
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -99,8 +106,34 @@ export async function POST(request: NextRequest) {
     // Get quality requirements
     const qualityDescription = QUALITY_MAP[quality] || QUALITY_MAP['2K HD']
 
-    // Construct comprehensive prompt
-    const fullPrompt = `
+    // Construct prompt based on whether we have an input image
+    let fullPrompt: string
+
+    if (imageBase64) {
+      // IMAGE-TO-IMAGE TRANSFORMATION MODE
+      fullPrompt = `
+TASK: Analyze the uploaded architectural image and transform it into a ${renderConfig.prefix}.
+
+TRANSFORMATION INSTRUCTIONS:
+- PRESERVE the core architectural structure, layout, and spatial organization from the uploaded image
+- MAINTAIN the building's footprint, room arrangement, and overall design language
+- APPLY ${aesthetic} aesthetic principles while keeping the original architecture recognizable
+- ${renderConfig.instructions}
+
+AESTHETIC TRANSFORMATION: ${aestheticDescription}
+
+${roomDetails ? `INTERIOR ELEMENTS TO ADD: ${roomDetails}` : ''}
+
+QUALITY REQUIREMENTS: ${qualityDescription}
+ASPECT RATIO: ${ASPECT_RATIO_MAP[aspectRatio] || '16:9'}
+
+${prompt ? `ADDITIONAL USER REQUIREMENTS: ${prompt}` : ''}
+
+CRITICAL: This is an architectural transformation, not a new design. The output must be a ${renderType.toLowerCase()} representation of THE UPLOADED BUILDING/SPACE, transformed with ${aesthetic} styling. Preserve proportions, layout, and key architectural features.
+      `.trim()
+    } else {
+      // TEXT-TO-IMAGE GENERATION MODE
+      fullPrompt = `
 ${renderConfig.prefix} - ${aesthetic} STYLE
 
 CRITICAL SPECIFICATIONS:
@@ -116,7 +149,8 @@ ASPECT RATIO: ${ASPECT_RATIO_MAP[aspectRatio] || '16:9'}
 USER DESIGN BRIEF: ${prompt}
 
 EXECUTION MANDATE: Generate a stunning, photorealistic ${renderType.toLowerCase()} that showcases ${aesthetic} design principles. Every detail must feel intentional, luxurious, and professionally composed. This should be portfolio-worthy work that could appear in Architectural Digest, Dezeen, or ArchDaily.
-    `.trim()
+      `.trim()
+    }
 
     const startTime = Date.now()
 
@@ -131,7 +165,7 @@ EXECUTION MANDATE: Generate a stunning, photorealistic ${renderType.toLowerCase(
                   data: imageBase64,
                 },
               },
-              { text: `Transform this room with the following style: ${fullPrompt}` },
+              { text: fullPrompt },
             ],
           },
         ]
@@ -147,6 +181,10 @@ EXECUTION MANDATE: Generate a stunning, photorealistic ${renderType.toLowerCase(
       contents,
       config: {
         responseModalities: ['image', 'text'],
+        imageConfig: {
+          aspectRatio: ASPECT_RATIO_MAP[aspectRatio] || '16:9',
+          imageSize: IMAGE_SIZE_MAP[quality] || '2K'
+        }
       },
     })
 
