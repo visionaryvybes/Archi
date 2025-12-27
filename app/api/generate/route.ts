@@ -72,6 +72,13 @@ const IMAGE_SIZE_MAP: Record<string, string> = {
   '4K UHD': '4K'
 }
 
+// Quality-based model selection (Digital Craftsman spec)
+const MODEL_FOR_QUALITY: Record<string, string> = {
+  '1K SD': 'gemini-2.0-flash-exp',           // Fast draft (~5s)
+  '2K HD': 'gemini-2.0-flash-exp',           // Standard quality (~8s)
+  '4K UHD': 'imagen-3.0-generate-002'        // Ultra quality (~15s)
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -176,8 +183,11 @@ EXECUTION MANDATE: Generate a stunning, photorealistic ${renderType.toLowerCase(
           },
         ]
 
+    // Select model based on quality setting
+    const selectedModel = MODEL_FOR_QUALITY[quality] || 'gemini-2.0-flash-exp'
+
     const response = await genAI.models.generateContent({
-      model: 'gemini-3-pro-image-preview',
+      model: selectedModel,
       contents,
       config: {
         responseModalities: ['image', 'text'],

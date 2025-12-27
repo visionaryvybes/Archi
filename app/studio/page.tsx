@@ -1,19 +1,33 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Settings, Camera, X, Layers, ChevronRight, ChevronDown, Upload, Maximize2 } from 'lucide-react'
-import * as Select from '@radix-ui/react-select'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  Settings, Camera, X, Layers, ChevronRight, ChevronDown,
+  Upload, Maximize2, Home, FolderOpen, Sparkles, Image as ImageIcon,
+  Grid3X3, Palette, Ruler
+} from 'lucide-react'
 import { LoadingAnimation } from '@/components/studio/loading-animation'
 
 type AppState = 'idle' | 'loading' | 'success' | 'error'
-type Tab = 'workspace' | 'vault'
 
 const RENDER_TYPES = ['Interior Design', '2D/3D Floor Plan', 'Exterior/Architectural', 'Technical Blueprint', 'Landscape/Garden']
 const AESTHETICS = ['Modern Minimalist', 'Scandinavian', 'Industrial', 'Bauhaus', 'Brutalist', 'Classic European']
 const ROOM_TYPES = ['Living Room', 'Kitchen', 'Bedroom', 'Bathroom', 'Office', 'Dining Room', 'Home Theater', 'Gym', 'Entryway', 'Outdoor/Patio']
 
+// Digital Craftsman Color Palette
+const colors = {
+  navy: '#0B1120',
+  navyLight: '#111827',
+  gold: '#D4AF37',
+  goldMedium: '#C1A746',
+  goldDark: '#9A7B64',
+  parchment: '#FAF7F2',
+  parchmentDark: '#F5F0E8',
+}
+
 export default function StudioPage() {
-  const [activeTab, setActiveTab] = useState<Tab>('workspace')
+  const [activeNav, setActiveNav] = useState('workspace')
   const [state, setState] = useState<AppState>('idle')
   const [prompt, setPrompt] = useState('')
   const [renderType, setRenderType] = useState('Interior Design')
@@ -28,10 +42,8 @@ export default function StudioPage() {
   const [estimatedTime, setEstimatedTime] = useState(45)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Show room type selector only for Interior Design and Floor Plan
   const showRoomType = renderType === 'Interior Design' || renderType === '2D/3D Floor Plan'
 
-  // Timer logic
   useEffect(() => {
     if (state === 'loading') {
       setElapsedTime(0)
@@ -57,7 +69,7 @@ export default function StudioPage() {
     if (!prompt.trim() && !sourceImage) return
 
     setState('loading')
-    setEstimatedTime(45)
+    setEstimatedTime(quality === '4K UHD' ? 60 : quality === '2K HD' ? 45 : 30)
 
     try {
       const imageBase64 = sourceImage?.split(',')[1] || ''
@@ -90,242 +102,483 @@ export default function StudioPage() {
   }
 
   return (
-    <div className="h-screen bg-black text-gray-200 flex flex-col overflow-hidden">
-      {/* Top Navigation */}
-      <header className="h-16 flex items-center justify-between px-8 border-b border-white/5 bg-black/80 backdrop-blur-xl shrink-0">
-        <div className="flex items-center gap-8">
-          <a href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center font-black text-white shadow-lg">
+    <div className="h-screen flex overflow-hidden" style={{ backgroundColor: colors.navy }}>
+      {/* Paper Grain Texture Overlay */}
+      <div
+        className="fixed inset-0 pointer-events-none z-50 opacity-[0.03]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
+      {/* Navigation Rail - Material Design 3 (80dp) */}
+      <nav
+        className="w-20 flex flex-col items-center py-6 border-r shrink-0"
+        style={{
+          backgroundColor: colors.navy,
+          borderColor: 'rgba(212, 175, 55, 0.1)'
+        }}
+      >
+        {/* Logo */}
+        <a href="/" className="mb-10">
+          <div
+            className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg"
+            style={{
+              background: `linear-gradient(135deg, ${colors.gold}, ${colors.goldMedium})`,
+            }}
+          >
+            <span className="text-xl font-bold" style={{ fontFamily: 'var(--font-playfair)', color: colors.navy }}>
               V
-            </div>
-            <span className="text-sm font-black uppercase tracking-[0.2em]">ARCHI-LAB</span>
-          </a>
-
-          <div className="flex items-center gap-4">
-            {(['workspace', 'vault'] as Tab[]).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`relative px-6 py-2 text-xs font-black uppercase tracking-[0.2em] transition-all ${
-                  activeTab === tab ? 'text-white' : 'text-gray-600 hover:text-gray-400'
-                }`}
-              >
-                {tab}
-                {activeTab === tab && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-cyan-500" />
-                )}
-              </button>
-            ))}
+            </span>
           </div>
-        </div>
+        </a>
 
-        <div className="flex items-center gap-4">
-          <button className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-black text-xs font-black uppercase tracking-[0.15em] rounded-lg hover:shadow-lg transition-all">
-            Design Lab
-          </button>
-          <button className="px-6 py-2.5 bg-white/5 border border-white/10 text-white text-xs font-black uppercase tracking-[0.15em] rounded-lg hover:bg-white/10 transition-all">
-            Simulate
-          </button>
-          <button className="p-2.5 bg-white/5 rounded-lg text-gray-500 hover:text-white transition-all">
-            <Settings size={18} />
-          </button>
-        </div>
-      </header>
-
-      <div className="flex flex-grow overflow-hidden">
-        {/* Left Sidebar */}
-        <aside className="w-[340px] border-r border-white/5 bg-[#0a0a0a] flex flex-col overflow-y-auto shrink-0 scrollbar-hide">
-          <form onSubmit={handleGenerate} className="flex flex-col h-full p-6 space-y-6">
-            {/* Design Brief */}
-            <div>
-              <div className="flex items-center gap-2 mb-3 text-gray-600">
-                <div className="w-1 h-1 rounded-full bg-gray-600" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Design Brief</span>
-              </div>
-              <textarea
-                value={prompt}
-                onChange={e => setPrompt(e.target.value)}
-                placeholder="Describe your vision..."
-                className="w-full h-32 bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-gray-300 outline-none focus:border-emerald-500/50 focus:bg-black/60 transition-all resize-none placeholder:text-gray-700"
+        {/* Nav Items */}
+        <div className="flex flex-col items-center gap-2 flex-grow">
+          {[
+            { id: 'workspace', icon: Home, label: 'Workspace' },
+            { id: 'projects', icon: FolderOpen, label: 'Projects' },
+            { id: 'styles', icon: Palette, label: 'Styles' },
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveNav(item.id)}
+              className="relative w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-200 group"
+              style={{
+                backgroundColor: activeNav === item.id ? 'rgba(212, 175, 55, 0.15)' : 'transparent',
+              }}
+            >
+              {activeNav === item.id && (
+                <motion.div
+                  layoutId="navIndicator"
+                  className="absolute left-0 w-1 h-8 rounded-r-full"
+                  style={{ backgroundColor: colors.gold }}
+                />
+              )}
+              <item.icon
+                size={22}
+                style={{
+                  color: activeNav === item.id ? colors.gold : 'rgba(250, 247, 242, 0.4)'
+                }}
+                className="group-hover:scale-110 transition-transform"
               />
-            </div>
+            </button>
+          ))}
+        </div>
 
-            {/* Render Config */}
-            <div>
-              <div className="flex items-center gap-2 mb-3 text-gray-600">
-                <Layers size={12} />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Render Config</span>
-              </div>
-              <div className="space-y-3">
-                <CustomSelect value={renderType} options={RENDER_TYPES} onChange={setRenderType} />
-                {showRoomType && (
-                  <CustomSelect value={roomType} options={ROOM_TYPES} onChange={setRoomType} />
-                )}
-                <CustomSelect value={aesthetic} options={AESTHETICS} onChange={setAesthetic} />
-              </div>
-            </div>
+        {/* Settings */}
+        <button
+          className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all hover:bg-white/5"
+          style={{ color: 'rgba(250, 247, 242, 0.4)' }}
+        >
+          <Settings size={20} />
+        </button>
+      </nav>
 
-            {/* Aspect Ratio & Quality */}
-            <div className="grid grid-cols-3 gap-2">
-              {['16:9', '1:1', '9:16'].map((ratio) => (
-                <button
-                  key={ratio}
-                  type="button"
-                  onClick={() => setAspectRatio(ratio)}
-                  className={`py-3 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
-                    aspectRatio === ratio
-                      ? 'bg-white text-black'
-                      : 'bg-white/5 text-gray-600 hover:bg-white/10 hover:text-white'
-                  }`}
+      {/* Main Content Area */}
+      <div className="flex-grow flex flex-col">
+        {/* Top App Bar - Material Design 3 (64dp) */}
+        <header
+          className="h-16 flex items-center justify-between px-8 border-b shrink-0"
+          style={{
+            backgroundColor: colors.navy,
+            borderColor: 'rgba(212, 175, 55, 0.1)'
+          }}
+        >
+          <div className="flex items-center gap-6">
+            <h1
+              className="text-lg tracking-wide"
+              style={{
+                fontFamily: 'var(--font-playfair)',
+                color: colors.parchment
+              }}
+            >
+              Design Studio
+            </h1>
+            <span
+              className="text-xs px-3 py-1 rounded-full"
+              style={{
+                backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                color: colors.gold,
+                fontFamily: 'var(--font-crimson)'
+              }}
+            >
+              Digital Craftsman
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              className="px-5 py-2.5 rounded-full text-sm font-medium transition-all hover:shadow-lg"
+              style={{
+                background: `linear-gradient(135deg, ${colors.gold}, ${colors.goldMedium})`,
+                color: colors.navy,
+                fontFamily: 'var(--font-crimson)'
+              }}
+            >
+              Design Lab
+            </button>
+            <button
+              className="px-5 py-2.5 rounded-full text-sm font-medium border transition-all hover:bg-white/5"
+              style={{
+                borderColor: 'rgba(212, 175, 55, 0.3)',
+                color: colors.parchment,
+                fontFamily: 'var(--font-crimson)'
+              }}
+            >
+              Simulate
+            </button>
+          </div>
+        </header>
+
+        {/* Workspace */}
+        <div className="flex flex-grow overflow-hidden">
+          {/* Left Properties Panel (320px) */}
+          <aside
+            className="w-80 border-r flex flex-col overflow-y-auto shrink-0"
+            style={{
+              backgroundColor: colors.navyLight,
+              borderColor: 'rgba(212, 175, 55, 0.1)'
+            }}
+          >
+            <form onSubmit={handleGenerate} className="flex flex-col h-full p-6 space-y-6">
+              {/* Design Brief */}
+              <div>
+                <label
+                  className="flex items-center gap-2 mb-3 text-xs uppercase tracking-widest"
+                  style={{ color: colors.gold, fontFamily: 'var(--font-crimson)' }}
                 >
-                  {ratio}
-                </button>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              {['1K SD', '2K HD', '4K UHD'].map((qual) => (
-                <button
-                  key={qual}
-                  type="button"
-                  onClick={() => setQuality(qual)}
-                  className={`py-3 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
-                    quality === qual
-                      ? 'bg-white text-black'
-                      : 'bg-white/5 text-gray-600 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  {qual}
-                </button>
-              ))}
-            </div>
-
-            {/* Site Context */}
-            <div>
-              <div className="flex items-center gap-2 mb-3 text-gray-600">
-                <Layers size={12} />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Site Context</span>
+                  <Sparkles size={14} />
+                  Design Brief
+                </label>
+                <textarea
+                  value={prompt}
+                  onChange={e => setPrompt(e.target.value)}
+                  placeholder="Describe your vision with care..."
+                  className="w-full h-28 rounded-xl p-4 text-sm outline-none transition-all resize-none"
+                  style={{
+                    backgroundColor: 'rgba(250, 247, 242, 0.05)',
+                    border: '1px solid rgba(212, 175, 55, 0.2)',
+                    color: colors.parchment,
+                    fontFamily: 'var(--font-crimson)'
+                  }}
+                />
               </div>
-              {sourceImage ? (
-                <div className="relative group rounded-xl overflow-hidden border border-white/10 shadow-lg">
-                  <img src={sourceImage} className="w-full aspect-video object-cover" alt="Source" />
+
+              {/* Render Config */}
+              <div>
+                <label
+                  className="flex items-center gap-2 mb-3 text-xs uppercase tracking-widest"
+                  style={{ color: colors.gold, fontFamily: 'var(--font-crimson)' }}
+                >
+                  <Layers size={14} />
+                  Render Configuration
+                </label>
+                <div className="space-y-3">
+                  <CraftsmanSelect value={renderType} options={RENDER_TYPES} onChange={setRenderType} />
+                  {showRoomType && (
+                    <CraftsmanSelect value={roomType} options={ROOM_TYPES} onChange={setRoomType} />
+                  )}
+                  <CraftsmanSelect value={aesthetic} options={AESTHETICS} onChange={setAesthetic} />
+                </div>
+              </div>
+
+              {/* Aspect Ratio */}
+              <div>
+                <label
+                  className="flex items-center gap-2 mb-3 text-xs uppercase tracking-widest"
+                  style={{ color: colors.gold, fontFamily: 'var(--font-crimson)' }}
+                >
+                  <Grid3X3 size={14} />
+                  Aspect Ratio
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {['16:9', '1:1', '9:16'].map((ratio) => (
+                    <button
+                      key={ratio}
+                      type="button"
+                      onClick={() => setAspectRatio(ratio)}
+                      className="py-3 text-xs font-medium rounded-xl transition-all"
+                      style={{
+                        backgroundColor: aspectRatio === ratio ? colors.gold : 'rgba(250, 247, 242, 0.05)',
+                        color: aspectRatio === ratio ? colors.navy : colors.parchment,
+                        border: `1px solid ${aspectRatio === ratio ? colors.gold : 'rgba(212, 175, 55, 0.2)'}`,
+                        fontFamily: 'var(--font-crimson)'
+                      }}
+                    >
+                      {ratio}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quality */}
+              <div>
+                <label
+                  className="flex items-center gap-2 mb-3 text-xs uppercase tracking-widest"
+                  style={{ color: colors.gold, fontFamily: 'var(--font-crimson)' }}
+                >
+                  <Ruler size={14} />
+                  Quality
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {['1K SD', '2K HD', '4K UHD'].map((qual) => (
+                    <button
+                      key={qual}
+                      type="button"
+                      onClick={() => setQuality(qual)}
+                      className="py-3 text-xs font-medium rounded-xl transition-all"
+                      style={{
+                        backgroundColor: quality === qual ? colors.gold : 'rgba(250, 247, 242, 0.05)',
+                        color: quality === qual ? colors.navy : colors.parchment,
+                        border: `1px solid ${quality === qual ? colors.gold : 'rgba(212, 175, 55, 0.2)'}`,
+                        fontFamily: 'var(--font-crimson)'
+                      }}
+                    >
+                      {qual}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Source Image */}
+              <div>
+                <label
+                  className="flex items-center gap-2 mb-3 text-xs uppercase tracking-widest"
+                  style={{ color: colors.gold, fontFamily: 'var(--font-crimson)' }}
+                >
+                  <ImageIcon size={14} />
+                  Source Image
+                </label>
+                {sourceImage ? (
+                  <div className="relative group rounded-xl overflow-hidden" style={{ border: `1px solid rgba(212, 175, 55, 0.3)` }}>
+                    <img src={sourceImage} className="w-full aspect-video object-cover" alt="Source" />
+                    <button
+                      type="button"
+                      onClick={() => setSourceImage(null)}
+                      className="absolute top-2 right-2 p-2 rounded-lg transition-all"
+                      style={{ backgroundColor: 'rgba(11, 17, 32, 0.8)', color: colors.parchment }}
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ) : (
                   <button
                     type="button"
-                    onClick={() => setSourceImage(null)}
-                    className="absolute top-2 right-2 p-2 bg-black/80 text-white rounded-lg hover:bg-red-600 transition-all"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full py-10 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 transition-all group"
+                    style={{
+                      borderColor: 'rgba(212, 175, 55, 0.2)',
+                      backgroundColor: 'rgba(250, 247, 242, 0.02)'
+                    }}
                   >
-                    <X size={16} />
+                    <Camera size={28} style={{ color: 'rgba(212, 175, 55, 0.5)' }} className="group-hover:scale-110 transition-transform" />
+                    <span
+                      className="text-xs uppercase tracking-wider"
+                      style={{ color: 'rgba(250, 247, 242, 0.5)', fontFamily: 'var(--font-crimson)' }}
+                    >
+                      Upload Reference
+                    </span>
+                    <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
                   </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full py-12 border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center gap-3 hover:border-emerald-500/50 hover:bg-white/5 transition-all group"
-                >
-                  <Camera size={32} className="text-gray-700 group-hover:text-emerald-500 transition-colors" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">
-                    Input Source / Photo
-                  </span>
-                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
-                </button>
-              )}
-            </div>
-
-            {/* Generate Button */}
-            <div className="mt-auto pt-6 border-t border-white/5">
-              <button
-                type="submit"
-                disabled={state === 'loading' || (!prompt.trim() && !sourceImage)}
-                className="w-full py-4 bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 text-black text-xs font-black uppercase tracking-[0.3em] rounded-xl hover:shadow-glow transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-              >
-                {state === 'loading' ? (
-                  'Architectural Render In Progress...'
-                ) : (
-                  <>
-                    Execute Render
-                    <ChevronRight size={16} />
-                  </>
                 )}
-              </button>
-            </div>
-          </form>
-        </aside>
-
-        {/* Main Canvas */}
-        <main className="flex-grow flex flex-col items-center justify-center p-12 relative overflow-hidden bg-black">
-          {state === 'idle' && (
-            <div className="text-center space-y-8">
-              <div className="w-32 h-32 bg-white/5 border border-white/10 rounded-3xl flex items-center justify-center mx-auto">
-                <Upload size={48} className="text-gray-800" />
               </div>
-              <div>
-                <h2 className="text-3xl font-black text-white uppercase tracking-tight mb-2">OS Ready for Input</h2>
-                <p className="text-[10px] font-mono uppercase tracking-[0.5em] text-gray-700">
-                  Configure parameters to begin
-                </p>
-              </div>
-            </div>
-          )}
 
-          {state === 'loading' && (
-            <LoadingAnimation elapsedTime={elapsedTime} estimatedRemaining={estimatedTime} />
-          )}
-
-          {state === 'success' && generatedImage && (
-            <div className="w-full max-w-6xl space-y-6">
-              <div className="relative group aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black">
-                <img src={generatedImage} className="w-full h-full object-contain" alt="Generated" />
+              {/* Generate FAB - Material Design 3 */}
+              <div className="mt-auto pt-6">
                 <button
-                  onClick={() => setIsEnlarged(true)}
-                  className="absolute top-6 right-6 p-4 bg-black/60 backdrop-blur-xl text-white rounded-xl hover:bg-white hover:text-black border border-white/10 transition-all opacity-0 group-hover:opacity-100"
+                  type="submit"
+                  disabled={state === 'loading' || (!prompt.trim() && !sourceImage)}
+                  className="w-full py-4 rounded-full text-sm font-semibold uppercase tracking-wider transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+                  style={{
+                    background: `linear-gradient(135deg, ${colors.gold}, ${colors.goldMedium})`,
+                    color: colors.navy,
+                    fontFamily: 'var(--font-playfair)'
+                  }}
                 >
-                  <Maximize2 size={20} />
+                  {state === 'loading' ? (
+                    'Crafting Your Vision...'
+                  ) : (
+                    <>
+                      Generate Render
+                      <ChevronRight size={18} />
+                    </>
+                  )}
                 </button>
               </div>
-              <div className="flex items-center justify-center">
-                <button
-                  onClick={() => setState('idle')}
-                  className="px-12 py-4 bg-white text-black font-black text-xs uppercase tracking-[0.4em] rounded-full hover:shadow-glow transition-all"
-                >
-                  New Render
-                </button>
-              </div>
-            </div>
-          )}
+            </form>
+          </aside>
 
-          {state === 'error' && (
-            <div className="text-center space-y-6">
-              <div className="text-red-500 text-5xl">⚠</div>
-              <p className="text-xl font-black text-white uppercase">Generation Failed</p>
-              <button
+          {/* Canvas - Parchment Workspace */}
+          <main
+            className="flex-grow flex items-center justify-center p-8 relative overflow-hidden"
+            style={{ backgroundColor: colors.parchmentDark }}
+          >
+            {/* Subtle watercolor wash */}
+            <div
+              className="absolute inset-0 opacity-30"
+              style={{
+                background: `radial-gradient(ellipse at 30% 20%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                             radial-gradient(ellipse at 70% 80%, rgba(154, 123, 100, 0.1) 0%, transparent 50%)`
+              }}
+            />
+
+            {/* White Canvas with MD3 Elevation */}
+            <div
+              className="relative w-full max-w-5xl aspect-video rounded-2xl flex items-center justify-center"
+              style={{
+                backgroundColor: '#FFFFFF',
+                boxShadow: '0 4px 12px rgba(11, 17, 32, 0.08), 0 1px 4px rgba(11, 17, 32, 0.04)'
+              }}
+            >
+              <AnimatePresence mode="wait">
+                {state === 'idle' && (
+                  <motion.div
+                    key="idle"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="text-center space-y-6 p-12"
+                  >
+                    <div
+                      className="w-24 h-24 rounded-3xl flex items-center justify-center mx-auto"
+                      style={{ backgroundColor: colors.parchmentDark }}
+                    >
+                      <Upload size={40} style={{ color: colors.goldDark }} />
+                    </div>
+                    <div>
+                      <h2
+                        className="text-3xl mb-2"
+                        style={{ fontFamily: 'var(--font-playfair)', color: colors.navy }}
+                      >
+                        Ready to Create
+                      </h2>
+                      <p
+                        className="text-sm"
+                        style={{ fontFamily: 'var(--font-crimson)', color: colors.goldDark }}
+                      >
+                        Configure your vision and let the craft begin
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+
+                {state === 'loading' && (
+                  <motion.div
+                    key="loading"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="w-full h-full flex items-center justify-center"
+                    style={{ backgroundColor: colors.navy }}
+                  >
+                    <LoadingAnimation elapsedTime={elapsedTime} estimatedRemaining={estimatedTime} />
+                  </motion.div>
+                )}
+
+                {state === 'success' && generatedImage && (
+                  <motion.div
+                    key="success"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="w-full h-full relative group"
+                  >
+                    <img src={generatedImage} className="w-full h-full object-contain rounded-2xl" alt="Generated" />
+                    <button
+                      onClick={() => setIsEnlarged(true)}
+                      className="absolute top-4 right-4 p-3 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                      style={{
+                        backgroundColor: 'rgba(11, 17, 32, 0.8)',
+                        color: colors.parchment
+                      }}
+                    >
+                      <Maximize2 size={18} />
+                    </button>
+                  </motion.div>
+                )}
+
+                {state === 'error' && (
+                  <motion.div
+                    key="error"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="text-center space-y-6 p-12"
+                  >
+                    <div className="text-5xl">⚠</div>
+                    <h3
+                      className="text-2xl"
+                      style={{ fontFamily: 'var(--font-playfair)', color: colors.navy }}
+                    >
+                      Generation Failed
+                    </h3>
+                    <button
+                      onClick={() => setState('idle')}
+                      className="px-8 py-3 rounded-full text-sm font-medium transition-all"
+                      style={{
+                        backgroundColor: colors.navy,
+                        color: colors.parchment,
+                        fontFamily: 'var(--font-crimson)'
+                      }}
+                    >
+                      Try Again
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* New Render Button (shown on success) */}
+            {state === 'success' && (
+              <motion.button
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 onClick={() => setState('idle')}
-                className="px-10 py-3 bg-white/10 border border-white/20 text-white font-bold uppercase rounded-full hover:bg-white/20 transition-all"
+                className="absolute bottom-8 px-8 py-3 rounded-full text-sm font-medium shadow-lg"
+                style={{
+                  background: `linear-gradient(135deg, ${colors.gold}, ${colors.goldMedium})`,
+                  color: colors.navy,
+                  fontFamily: 'var(--font-playfair)'
+                }}
               >
-                Try Again
-              </button>
-            </div>
-          )}
-
-          {/* Fullscreen View */}
-          {isEnlarged && generatedImage && (
-            <div className="fixed inset-0 z-[100] bg-black/98 backdrop-blur-3xl flex items-center justify-center p-10">
-              <button
-                onClick={() => setIsEnlarged(false)}
-                className="absolute top-10 right-10 p-6 bg-white/5 border border-white/10 text-white rounded-2xl hover:bg-red-600 transition-all"
-              >
-                <X size={28} />
-              </button>
-              <img src={generatedImage} className="max-w-full max-h-full object-contain" alt="Fullscreen" />
-            </div>
-          )}
-        </main>
+                Create New Render
+              </motion.button>
+            )}
+          </main>
+        </div>
       </div>
+
+      {/* Fullscreen Modal */}
+      <AnimatePresence>
+        {isEnlarged && generatedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-8"
+            style={{ backgroundColor: 'rgba(11, 17, 32, 0.98)' }}
+          >
+            <button
+              onClick={() => setIsEnlarged(false)}
+              className="absolute top-8 right-8 p-4 rounded-2xl transition-all"
+              style={{
+                backgroundColor: 'rgba(250, 247, 242, 0.1)',
+                color: colors.parchment
+              }}
+            >
+              <X size={24} />
+            </button>
+            <img src={generatedImage} className="max-w-full max-h-full object-contain rounded-2xl" alt="Fullscreen" />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
 
-function CustomSelect({ value, options, onChange }: { value: string; options: string[]; onChange: (v: string) => void }) {
+// Craftsman Select Component
+function CraftsmanSelect({ value, options, onChange }: { value: string; options: string[]; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -333,32 +586,52 @@ function CustomSelect({ value, options, onChange }: { value: string; options: st
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-sm font-bold uppercase tracking-wider text-amber-500 hover:bg-black/60 hover:border-emerald-500/30 transition-all"
+        className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm transition-all"
+        style={{
+          backgroundColor: 'rgba(250, 247, 242, 0.05)',
+          border: '1px solid rgba(212, 175, 55, 0.2)',
+          color: colors.gold,
+          fontFamily: 'var(--font-crimson)'
+        }}
       >
         {value}
-        <ChevronDown size={14} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown size={16} className={`transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: colors.goldDark }} />
       </button>
-      {open && (
-        <div className="absolute z-50 w-full mt-2 bg-black border border-white/10 rounded-lg overflow-hidden shadow-2xl max-h-60 overflow-y-auto">
-          {options.map((opt) => (
-            <button
-              key={opt}
-              type="button"
-              onClick={() => {
-                onChange(opt)
-                setOpen(false)
-              }}
-              className={`w-full px-4 py-3 text-left text-xs font-black uppercase tracking-wider transition-all ${
-                value === opt
-                  ? 'bg-white text-black'
-                  : 'text-gray-600 hover:bg-white/5 hover:text-white'
-              }`}
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
-      )}
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute z-50 w-full mt-2 rounded-xl overflow-hidden max-h-60 overflow-y-auto"
+            style={{
+              backgroundColor: colors.navyLight,
+              border: '1px solid rgba(212, 175, 55, 0.2)',
+              boxShadow: '0 8px 24px rgba(11, 17, 32, 0.4)'
+            }}
+          >
+            {options.map((opt) => (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => {
+                  onChange(opt)
+                  setOpen(false)
+                }}
+                className="w-full px-4 py-3 text-left text-sm transition-all"
+                style={{
+                  backgroundColor: value === opt ? 'rgba(212, 175, 55, 0.15)' : 'transparent',
+                  color: value === opt ? colors.gold : colors.parchment,
+                  fontFamily: 'var(--font-crimson)'
+                }}
+              >
+                {opt}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

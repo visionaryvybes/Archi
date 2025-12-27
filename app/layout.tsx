@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { DM_Sans, Outfit, JetBrains_Mono } from 'next/font/google'
+import { DM_Sans, Outfit, JetBrains_Mono, Playfair_Display, Crimson_Text } from 'next/font/google'
 import './globals.css'
 
 const dmSans = DM_Sans({
@@ -18,6 +18,21 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-jetbrains-mono',
   display: 'swap',
+})
+
+// Digital Craftsman fonts
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  display: 'swap',
+  weight: ['400', '500', '600', '700', '800', '900'],
+})
+
+const crimsonText = Crimson_Text({
+  subsets: ['latin'],
+  variable: '--font-crimson',
+  display: 'swap',
+  weight: ['400', '600', '700'],
 })
 
 export const metadata: Metadata = {
@@ -70,7 +85,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${outfit.variable} ${jetbrainsMono.variable} dark`}
+      className={`${dmSans.variable} ${outfit.variable} ${jetbrainsMono.variable} ${playfairDisplay.variable} ${crimsonText.variable} dark`}
       suppressHydrationWarning
     >
       <body className="font-sans antialiased bg-black text-white min-h-screen">
