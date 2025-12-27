@@ -15,9 +15,9 @@ interface ComparisonSliderProps {
   autoPlayDuration?: number
 }
 
-// Default demo images from Unsplash (high-quality interior design photos)
-const DEFAULT_BEFORE = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&h=800&fit=crop&q=80'
-const DEFAULT_AFTER = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200&h=800&fit=crop&q=80'
+// AI-generated demo images
+const DEFAULT_BEFORE = '/images/hero-before.jpg'
+const DEFAULT_AFTER = '/images/hero-after.jpg'
 
 export function ComparisonSlider({
   beforeImage,

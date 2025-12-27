@@ -8,18 +8,18 @@ import { Upload, Palette, Sparkles, ChevronLeft, ChevronRight, X, Loader2, Alert
 const DEMO_LIMIT = 3;
 const STORAGE_KEY = 'visionary-demo-count';
 
-// Demo images from Unsplash
+// AI-generated demo images
 const DEMO_IMAGES = {
-  before: 'https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=800&h=600&fit=crop&q=80',
+  before: '/images/demo-before.jpg',
   results: {
-    modern: 'https://images.unsplash.com/photo-1600210492493-0946911123ea?w=800&h=600&fit=crop&q=80',
-    minimalist: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop&q=80',
-    industrial: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&q=80',
-    scandinavian: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&h=600&fit=crop&q=80',
-    bohemian: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800&h=600&fit=crop&q=80',
-    'mid-century': 'https://images.unsplash.com/photo-1600121848594-d8644e57abab?w=800&h=600&fit=crop&q=80',
-    coastal: 'https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=800&h=600&fit=crop&q=80',
-    rustic: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&h=600&fit=crop&q=80',
+    modern: '/images/demo-after.jpg',
+    minimalist: '/images/demo-after.jpg',
+    industrial: '/images/demo-after.jpg',
+    scandinavian: '/images/demo-after.jpg',
+    bohemian: '/images/demo-after.jpg',
+    'mid-century': '/images/demo-after.jpg',
+    coastal: '/images/demo-after.jpg',
+    rustic: '/images/demo-after.jpg',
   } as Record<string, string>
 };
 

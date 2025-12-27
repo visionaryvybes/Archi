@@ -322,9 +322,11 @@ export function Canvas({ className }: CanvasProps) {
             <div className="absolute inset-0 flex items-center justify-center p-8">
               <div className="relative w-full h-full max-w-4xl">
                 <div className="absolute inset-0 bg-slate-800 rounded-2xl overflow-hidden">
-                  <div className="w-full h-full bg-gradient-to-br from-emerald-900/20 to-cyan-900/20 flex items-center justify-center">
-                    <span className="text-white/30">Generated Render</span>
-                  </div>
+                  <img
+                    src={currentRender.imageUrl}
+                    alt="Generated render"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>
@@ -336,9 +338,11 @@ export function Canvas({ className }: CanvasProps) {
             >
               <div className="relative w-full h-full max-w-4xl">
                 <div className="absolute inset-0 bg-slate-700 rounded-2xl overflow-hidden">
-                  <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center">
-                    <span className="text-white/30">Original</span>
-                  </div>
+                  <img
+                    src={originalImage}
+                    alt="Original"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>
@@ -379,12 +383,32 @@ export function Canvas({ className }: CanvasProps) {
           <div className="absolute inset-0 flex items-center justify-center p-8">
             <div className="relative w-full h-full max-w-4xl">
               <div className="absolute inset-0 bg-slate-800 rounded-2xl overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center">
-                  <span className="text-white/30">Original Image</span>
-                </div>
+                <img
+                  src={originalImage}
+                  alt="Uploaded room"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="absolute bottom-4 left-4 px-2 py-1 rounded bg-black/50 text-xs text-white/70 backdrop-blur-sm">
                 Original - Ready for rendering
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Generated Image Only (no original) */}
+        {!originalImage && currentRender && !isGenerating && (
+          <div className="absolute inset-0 flex items-center justify-center p-8">
+            <div className="relative w-full h-full max-w-4xl">
+              <div className="absolute inset-0 bg-slate-800 rounded-2xl overflow-hidden">
+                <img
+                  src={currentRender.imageUrl}
+                  alt="Generated render"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="absolute bottom-4 left-4 px-2 py-1 rounded bg-gradient-to-r from-emerald-500/80 to-cyan-500/80 text-xs text-white backdrop-blur-sm">
+                AI Generated - {currentRender.style}
               </div>
             </div>
           </div>

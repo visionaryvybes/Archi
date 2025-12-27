@@ -21,6 +21,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://visionary-studio.vercel.app'),
   title: 'Visionary Studio | AI Interior Design Platform',
   description: 'Professional interior renders in 30 seconds. The only AI design tool using Google Gemini 2.0. Instant, photorealistic results.',
   keywords: ['interior design', 'AI', 'render', 'architecture', 'Gemini', 'design tool'],

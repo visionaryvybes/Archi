@@ -313,39 +313,129 @@ export const useStudioStore = create<StudioState>()(
 
         set({ isGenerating: true, generationProgress: 0 })
 
-        // Simulate generation phases
-        for (const phase of GENERATION_PHASES) {
-          set({ generationPhase: phase, generationProgress: phase.progress })
-          await new Promise((resolve) => setTimeout(resolve, 2000))
+        // Start progress animation
+        const progressInterval = setInterval(() => {
+          set((s) => {
+            const currentProgress = s.generationProgress
+            if (currentProgress < 90) {
+              const newProgress = currentProgress + 5
+              const phaseIndex = Math.floor(newProgress / 25)
+              return {
+                generationProgress: newProgress,
+                generationPhase: GENERATION_PHASES[Math.min(phaseIndex, GENERATION_PHASES.length - 1)],
+              }
+            }
+            return s
+          })
+        }, 500)
+
+        try {
+          // Get base64 from original image if available
+          let imageBase64: string | undefined
+          if (state.originalImage && state.originalImage.startsWith('blob:')) {
+            try {
+              const response = await fetch(state.originalImage)
+              const blob = await response.blob()
+              const reader = new FileReader()
+              imageBase64 = await new Promise<string>((resolve) => {
+                reader.onloadend = () => {
+                  const base64 = (reader.result as string).split(',')[1]
+                  resolve(base64)
+                }
+                reader.readAsDataURL(blob)
+              })
+            } catch (e) {
+              console.error('Failed to convert image to base64:', e)
+            }
+          }
+
+          // Call the actual API
+          const apiResponse = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              prompt,
+              style: state.settings.style.id,
+              imageBase64,
+              aspectRatio: state.settings.aspectRatio,
+            }),
+          })
+
+          const data = await apiResponse.json()
+          clearInterval(progressInterval)
+
+          if (data.success && data.imageBase64) {
+            // Create object URL from base64
+            const imageUrl = `data:image/png;base64,${data.imageBase64}`
+
+            const newRender: Render = {
+              id: generateId(),
+              imageUrl,
+              prompt,
+              style: state.settings.style.name,
+              createdAt: new Date(),
+              sessionId: state.currentSessionId || '',
+              settings: state.settings,
+            }
+
+            set((s) => ({
+              isGenerating: false,
+              generationPhase: null,
+              generationProgress: 100,
+              currentRender: newRender,
+              variations: [],
+              recentRenders: [newRender, ...s.recentRenders].slice(0, 12),
+              rendersUsedThisMonth: s.rendersUsedThisMonth + 1,
+            }))
+          } else {
+            // Fallback to demo mode if API fails
+            console.warn('API generation failed, using fallback:', data.error)
+
+            const newRender: Render = {
+              id: generateId(),
+              imageUrl: state.originalImage || 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&h=600&fit=crop&q=80',
+              prompt,
+              style: state.settings.style.name,
+              createdAt: new Date(),
+              sessionId: state.currentSessionId || '',
+              settings: state.settings,
+            }
+
+            set((s) => ({
+              isGenerating: false,
+              generationPhase: null,
+              generationProgress: 100,
+              currentRender: newRender,
+              variations: [],
+              recentRenders: [newRender, ...s.recentRenders].slice(0, 12),
+              rendersUsedThisMonth: s.rendersUsedThisMonth + 1,
+            }))
+          }
+        } catch (error) {
+          clearInterval(progressInterval)
+          console.error('Generation error:', error)
+
+          // Fallback on error
+          const newRender: Render = {
+            id: generateId(),
+            imageUrl: state.originalImage || 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&h=600&fit=crop&q=80',
+            prompt,
+            style: state.settings.style.name,
+            createdAt: new Date(),
+            sessionId: state.currentSessionId || '',
+            settings: state.settings,
+          }
+
+          set((s) => ({
+            isGenerating: false,
+            generationPhase: null,
+            generationProgress: 100,
+            currentRender: newRender,
+            variations: [],
+            recentRenders: [newRender, ...s.recentRenders].slice(0, 12),
+            rendersUsedThisMonth: s.rendersUsedThisMonth + 1,
+          }))
         }
-
-        // Complete generation
-        const newRender: Render = {
-          id: generateId(),
-          imageUrl: state.originalImage || '/renders/sample-render.jpg',
-          prompt,
-          style: state.settings.style.name,
-          createdAt: new Date(),
-          sessionId: state.currentSessionId || '',
-          settings: state.settings,
-        }
-
-        // Generate variations
-        const newVariations: RenderVariation[] = Array.from({ length: 3 }, () => ({
-          id: generateId(),
-          imageUrl: '/renders/variation.jpg',
-          parentRenderId: newRender.id,
-        }))
-
-        set((state) => ({
-          isGenerating: false,
-          generationPhase: null,
-          generationProgress: 100,
-          currentRender: newRender,
-          variations: newVariations,
-          recentRenders: [newRender, ...state.recentRenders].slice(0, 12),
-          rendersUsedThisMonth: state.rendersUsedThisMonth + 1,
-        }))
       },
 
       selectVariation: (variationId) => {

@@ -73,11 +73,11 @@ const modes: Mode[] = [
 function ImageModePreview() {
   return (
     <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900/50">
-      {/* Before/After with real images */}
+      {/* Before/After with AI-generated images */}
       <div className="absolute inset-0 flex">
         <div className="w-1/2 relative">
           <img
-            src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop&q=80"
+            src="/images/hero-before.jpg"
             alt="Before"
             className="w-full h-full object-cover"
           />
@@ -87,7 +87,7 @@ function ImageModePreview() {
         </div>
         <div className="w-1/2 relative border-l-2 border-emerald-500">
           <img
-            src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=400&h=300&fit=crop&q=80"
+            src="/images/hero-after.jpg"
             alt="After"
             className="w-full h-full object-cover"
           />
