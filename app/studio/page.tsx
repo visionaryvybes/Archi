@@ -1,60 +1,42 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { Settings, Camera, ChevronUp, ChevronDown, X, Layers, ChevronRight, Cpu, Upload, Loader2, Maximize2 } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { Settings, Camera, X, Layers, ChevronRight, ChevronDown, Upload, Maximize2 } from 'lucide-react'
+import * as Select from '@radix-ui/react-select'
+import { LoadingAnimation } from '@/components/studio/loading-animation'
 
 type AppState = 'idle' | 'loading' | 'success' | 'error'
+type Tab = 'workspace' | 'vault'
 
-const MACRO_ENGINE_OPTIONS = [
-  'INTERIOR DESIGN',
-  'EXTERIOR/ARCHITECTURAL',
-  '2D/3D FLOOR PLAN',
-  'TECHNICAL BLUEPRINT',
-  'LANDSCAPE/GARDEN',
-  'MATERIAL STUDY',
-  'RE-RENDER SOURCE'
-]
-
-const SPATIAL_DOMAIN_OPTIONS = [
-  'LIVING ROOM',
-  'KITCHEN / CULINARY',
-  'MASTER SUITE',
-  'SPA / BATHROOM',
-  'HOME OFFICE / STUDIO',
-  'HOME CINEMA',
-  'WELLNESS / GYM'
-]
-
-const AESTHETIC_MATRIX_OPTIONS = [
-  'MODERN MINIMALIST',
-  'SCANDINAVIAN',
-  'INDUSTRIAL',
-  'BAUHAUS',
-  'BRUTALIST',
-  'CLASSIC EUROPEAN',
-  'BIOPHILIC/ORGANIC'
-]
+const RENDER_TYPES = ['Interior Design', '2D/3D Floor Plan', 'Exterior/Architectural', 'Technical Blueprint', 'Landscape/Garden']
+const AESTHETICS = ['Modern Minimalist', 'Scandinavian', 'Industrial', 'Bauhaus', 'Brutalist', 'Classic European']
 
 export default function StudioPage() {
+  const [activeTab, setActiveTab] = useState<Tab>('workspace')
   const [state, setState] = useState<AppState>('idle')
   const [prompt, setPrompt] = useState('')
-
-  // Expandable sections
-  const [macroEngineOpen, setMacroEngineOpen] = useState(true)
-  const [spatialDomainOpen, setSpatialDomainOpen] = useState(true)
-  const [aestheticMatrixOpen, setAestheticMatrixOpen] = useState(true)
-
-  // Selections
-  const [macroEngine, setMacroEngine] = useState('INTERIOR DESIGN')
-  const [spatialDomain, setSpatialDomain] = useState('LIVING ROOM')
-  const [aestheticMatrix, setAestheticMatrix] = useState('MODERN MINIMALIST')
+  const [renderType, setRenderType] = useState('2D/3D Floor Plan')
+  const [aesthetic, setAesthetic] = useState('Modern Minimalist')
   const [aspectRatio, setAspectRatio] = useState('16:9')
-  const [fidelity, setFidelity] = useState('1K SD')
-
+  const [quality, setQuality] = useState('1K SD')
   const [sourceImage, setSourceImage] = useState<string | null>(null)
   const [generatedImage, setGeneratedImage] = useState<string | null>(null)
   const [isEnlarged, setIsEnlarged] = useState(false)
+  const [elapsedTime, setElapsedTime] = useState(0)
+  const [estimatedTime, setEstimatedTime] = useState(45)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Timer logic
+  useEffect(() => {
+    if (state === 'loading') {
+      setElapsedTime(0)
+      const interval = setInterval(() => {
+        setElapsedTime(prev => prev + 1)
+        setEstimatedTime(prev => Math.max(0, prev - 1))
+      }, 1000)
+      return () => clearInterval(interval)
+    }
+  }, [state])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target?.files?.[0]
@@ -70,6 +52,7 @@ export default function StudioPage() {
     if (!prompt.trim() && !sourceImage) return
 
     setState('loading')
+    setEstimatedTime(45)
 
     try {
       const imageBase64 = sourceImage?.split(',')[1] || ''
@@ -77,8 +60,8 @@ export default function StudioPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `${spatialDomain} in ${aestheticMatrix} style. ${macroEngine}. ${prompt}`,
-          style: aestheticMatrix.toLowerCase(),
+          prompt: `${renderType}. ${aesthetic} style. ${prompt}`,
+          style: aesthetic.toLowerCase(),
           imageBase64,
           aspectRatio
         })
@@ -100,196 +83,157 @@ export default function StudioPage() {
 
   return (
     <div className="h-screen bg-black text-gray-200 flex flex-col overflow-hidden">
-      {/* Header */}
-      <header className="h-20 flex justify-between items-center px-10 border-b border-white/5 bg-black/80 backdrop-blur-2xl z-40 shrink-0">
+      {/* Top Navigation */}
+      <header className="h-16 flex items-center justify-between px-8 border-b border-white/5 bg-black/80 backdrop-blur-xl shrink-0">
         <div className="flex items-center gap-8">
-          <a href="/" className="flex items-center gap-4 group">
-            <div className="w-11 h-11 bg-white text-black rounded-2xl flex items-center justify-center font-black transition-all group-hover:rotate-6 shadow-xl shadow-white/10">V</div>
-            <div>
-              <h1 className="text-xs font-black tracking-[0.3em] text-white uppercase">Visionary Studio</h1>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></div>
-                <span className="text-[8px] font-black text-indigo-500/60 uppercase tracking-[0.2em]">CONNECTED v2.0</span>
-              </div>
+          <a href="/" className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center font-black text-white shadow-lg">
+              V
             </div>
+            <span className="text-sm font-black uppercase tracking-[0.2em]">ARCHI-LAB</span>
           </a>
+
+          <div className="flex items-center gap-4">
+            {(['workspace', 'vault'] as Tab[]).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`relative px-6 py-2 text-xs font-black uppercase tracking-[0.2em] transition-all ${
+                  activeTab === tab ? 'text-white' : 'text-gray-600 hover:text-gray-400'
+                }`}
+              >
+                {tab}
+                {activeTab === tab && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-cyan-500" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="flex items-center gap-8">
-          <div className="flex flex-col items-end">
-            <span className="text-[7px] font-black text-gray-600 uppercase tracking-widest">TELEMETRY</span>
-            <span className="text-[10px] font-mono text-green-500">READY</span>
-          </div>
-          <button className="p-3 bg-white/5 rounded-xl text-gray-500 hover:text-white transition-all">
+        <div className="flex items-center gap-4">
+          <button className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-black text-xs font-black uppercase tracking-[0.15em] rounded-lg hover:shadow-lg transition-all">
+            Design Lab
+          </button>
+          <button className="px-6 py-2.5 bg-white/5 border border-white/10 text-white text-xs font-black uppercase tracking-[0.15em] rounded-lg hover:bg-white/10 transition-all">
+            Simulate
+          </button>
+          <button className="p-2.5 bg-white/5 rounded-lg text-gray-500 hover:text-white transition-all">
             <Settings size={18} />
           </button>
         </div>
       </header>
 
       <div className="flex flex-grow overflow-hidden">
-        {/* Left Sidebar - Controls */}
-        <aside className="w-[420px] border-r border-white/5 bg-[#080808] flex flex-col overflow-y-auto shrink-0 z-20 shadow-2xl scrollbar-hide">
-          <form onSubmit={handleGenerate} className="flex flex-col h-full">
-            <div className="p-10 space-y-8 pb-40">
-              {/* Header */}
-              <div className="flex items-center gap-4 px-2 py-4 border-b border-white/5">
-                <div className="p-3 bg-white/5 rounded-2xl"><Cpu size={18} className="text-indigo-400" /></div>
-                <div>
-                  <span className="text-[10px] font-black text-white uppercase tracking-[0.4em]">CONSOLE v2.0</span>
-                  <p className="text-[7px] font-black text-gray-600 uppercase tracking-widest mt-1">CORE ACTIVE</p>
-                </div>
+        {/* Left Sidebar */}
+        <aside className="w-[340px] border-r border-white/5 bg-[#0a0a0a] flex flex-col overflow-y-auto shrink-0 scrollbar-hide">
+          <form onSubmit={handleGenerate} className="flex flex-col h-full p-6 space-y-6">
+            {/* Design Brief */}
+            <div>
+              <div className="flex items-center gap-2 mb-3 text-gray-600">
+                <div className="w-1 h-1 rounded-full bg-gray-600" />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Design Brief</span>
               </div>
-
-              {/* Prompt */}
-              <section>
-                <div className="flex items-center gap-3 text-gray-700 px-1 mb-4">
-                  <span className="text-[9px] font-black uppercase tracking-[0.4em]">Design Directive</span>
-                </div>
-                <textarea
-                  value={prompt}
-                  onChange={e => setPrompt(e.target.value)}
-                  placeholder="Materiality, illumination, spatial flow..."
-                  className="w-full h-40 bg-white/[0.01] border border-white/5 rounded-3xl p-8 text-[12px] font-light text-gray-300 outline-none focus:border-indigo-500/30 focus:bg-white/[0.03] transition-all resize-none leading-relaxed shadow-inner placeholder:text-gray-800"
-                />
-              </section>
-
-              {/* Macro Engine */}
-              <CollapsibleSection
-                label="MACRO ENGINE"
-                isOpen={macroEngineOpen}
-                onToggle={() => setMacroEngineOpen(!macroEngineOpen)}
-                selected={macroEngine}
-              >
-                {MACRO_ENGINE_OPTIONS.map((option) => (
-                  <RadioOption
-                    key={option}
-                    label={option}
-                    selected={macroEngine === option}
-                    onClick={() => setMacroEngine(option)}
-                  />
-                ))}
-              </CollapsibleSection>
-
-              {/* Spatial Domain */}
-              <CollapsibleSection
-                label="SPATIAL DOMAIN"
-                isOpen={spatialDomainOpen}
-                onToggle={() => setSpatialDomainOpen(!spatialDomainOpen)}
-                selected={spatialDomain}
-              >
-                {SPATIAL_DOMAIN_OPTIONS.map((option) => (
-                  <RadioOption
-                    key={option}
-                    label={option}
-                    selected={spatialDomain === option}
-                    onClick={() => setSpatialDomain(option)}
-                  />
-                ))}
-              </CollapsibleSection>
-
-              {/* Aesthetic Matrix */}
-              <CollapsibleSection
-                label="AESTHETIC MATRIX"
-                isOpen={aestheticMatrixOpen}
-                onToggle={() => setAestheticMatrixOpen(!aestheticMatrixOpen)}
-                selected={aestheticMatrix}
-              >
-                {AESTHETIC_MATRIX_OPTIONS.map((option) => (
-                  <RadioOption
-                    key={option}
-                    label={option}
-                    selected={aestheticMatrix === option}
-                    onClick={() => setAestheticMatrix(option)}
-                  />
-                ))}
-              </CollapsibleSection>
-
-              {/* Viewport Proportion */}
-              <div>
-                <label className="block text-[8px] font-black uppercase tracking-[0.5em] text-gray-700 mb-4 ml-1">Viewport Proportion</label>
-                <div className="flex gap-4">
-                  {['16:9', '1:1', '9:16'].map((ratio) => (
-                    <button
-                      key={ratio}
-                      type="button"
-                      onClick={() => setAspectRatio(ratio)}
-                      className={`flex-1 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-all ${aspectRatio === ratio ? 'bg-white text-black shadow-2xl' : 'bg-white/5 text-gray-600 hover:text-white hover:bg-white/10'}`}
-                    >
-                      {ratio}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Fidelity Level */}
-              <div>
-                <label className="block text-[8px] font-black uppercase tracking-[0.5em] text-gray-700 mb-4 ml-1">Fidelity Level</label>
-                <div className="flex gap-4">
-                  {['1K SD', '2K HD', '4K ULTRA'].map((qual) => (
-                    <button
-                      key={qual}
-                      type="button"
-                      onClick={() => setFidelity(qual)}
-                      className={`flex-1 py-5 text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl transition-all ${fidelity === qual ? 'bg-white text-black shadow-2xl' : 'bg-white/5 text-gray-600 hover:text-white hover:bg-white/10'}`}
-                    >
-                      {qual}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Context Seeding */}
-              <section>
-                <div className="flex items-center gap-3 text-gray-700 px-1 mb-6">
-                  <Layers size={14} />
-                  <span className="text-[9px] font-black uppercase tracking-[0.4em]">Context Seeding</span>
-                </div>
-                {sourceImage ? (
-                  <div className="relative group aspect-video rounded-3xl overflow-hidden border border-white/10 bg-black/40 shadow-2xl">
-                    <img src={sourceImage} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" alt="Source" />
-                    <button
-                      type="button"
-                      onClick={() => setSourceImage(null)}
-                      className="absolute top-6 right-6 p-3 bg-black/80 text-white rounded-2xl hover:bg-red-600 transition-all border border-white/10 shadow-2xl"
-                    >
-                      <X size={20} />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="w-full py-16 bg-white/[0.01] border border-dashed border-white/10 rounded-[4rem] flex flex-col items-center justify-center gap-6 hover:bg-white/[0.03] hover:border-indigo-500/40 transition-all group shadow-inner"
-                  >
-                    <div className="p-6 bg-white/5 rounded-[2rem] group-hover:scale-110 transition-transform shadow-2xl">
-                      <Camera size={40} className="text-gray-700 group-hover:text-indigo-500 transition-colors" />
-                    </div>
-                    <div className="text-center">
-                      <span className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-600 block mb-2">Import context photo</span>
-                      <span className="text-[7px] font-black text-gray-800 uppercase tracking-widest">DRAG AND DROP SUPPORTED</span>
-                    </div>
-                    <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
-                  </button>
-                )}
-              </section>
+              <textarea
+                value={prompt}
+                onChange={e => setPrompt(e.target.value)}
+                placeholder="Describe your vision..."
+                className="w-full h-32 bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-gray-300 outline-none focus:border-emerald-500/50 focus:bg-black/60 transition-all resize-none placeholder:text-gray-700"
+              />
             </div>
 
-            {/* Submit Button */}
-            <div className="mt-auto p-10 bg-[#080808]/90 backdrop-blur-3xl border-t border-white/5 fixed bottom-0 w-[420px] z-30">
+            {/* Render Config */}
+            <div>
+              <div className="flex items-center gap-2 mb-3 text-gray-600">
+                <Layers size={12} />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Render Config</span>
+              </div>
+              <div className="space-y-3">
+                <CustomSelect value={renderType} options={RENDER_TYPES} onChange={setRenderType} />
+                <CustomSelect value={aesthetic} options={AESTHETICS} onChange={setAesthetic} />
+              </div>
+            </div>
+
+            {/* Aspect Ratio & Quality */}
+            <div className="grid grid-cols-3 gap-2">
+              {['16:9', '1:1', '9:16'].map((ratio) => (
+                <button
+                  key={ratio}
+                  type="button"
+                  onClick={() => setAspectRatio(ratio)}
+                  className={`py-3 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
+                    aspectRatio === ratio
+                      ? 'bg-white text-black'
+                      : 'bg-white/5 text-gray-600 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  {ratio}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
+              {['1K SD', '2K HD', '4K UHD'].map((qual) => (
+                <button
+                  key={qual}
+                  type="button"
+                  onClick={() => setQuality(qual)}
+                  className={`py-3 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
+                    quality === qual
+                      ? 'bg-white text-black'
+                      : 'bg-white/5 text-gray-600 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  {qual}
+                </button>
+              ))}
+            </div>
+
+            {/* Site Context */}
+            <div>
+              <div className="flex items-center gap-2 mb-3 text-gray-600">
+                <Layers size={12} />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Site Context</span>
+              </div>
+              {sourceImage ? (
+                <div className="relative group rounded-xl overflow-hidden border border-white/10 shadow-lg">
+                  <img src={sourceImage} className="w-full aspect-video object-cover" alt="Source" />
+                  <button
+                    type="button"
+                    onClick={() => setSourceImage(null)}
+                    className="absolute top-2 right-2 p-2 bg-black/80 text-white rounded-lg hover:bg-red-600 transition-all"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full py-12 border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center gap-3 hover:border-emerald-500/50 hover:bg-white/5 transition-all group"
+                >
+                  <Camera size={32} className="text-gray-700 group-hover:text-emerald-500 transition-colors" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">
+                    Input Source / Photo
+                  </span>
+                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
+                </button>
+              )}
+            </div>
+
+            {/* Generate Button */}
+            <div className="mt-auto pt-6 border-t border-white/5">
               <button
                 type="submit"
                 disabled={state === 'loading' || (!prompt.trim() && !sourceImage)}
-                className="group relative w-full py-10 rounded-[2.5rem] font-black uppercase tracking-[0.8em] text-[12px] transition-all overflow-hidden flex items-center justify-center gap-6 bg-white text-black shadow-[0_0_100px_rgba(255,255,255,0.08)] active:scale-95 disabled:opacity-20"
+                className="w-full py-4 bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 text-black text-xs font-black uppercase tracking-[0.3em] rounded-xl hover:shadow-glow transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-3"
               >
                 {state === 'loading' ? (
-                  <div className="flex items-center gap-5">
-                    <Loader2 size={24} className="animate-spin" />
-                    <span>INITIALIZING...</span>
-                  </div>
+                  'Architectural Render In Progress...'
                 ) : (
                   <>
-                    <span className="relative z-10">EXECUTE RENDER</span>
-                    <ChevronRight size={22} className="relative z-10 group-hover:translate-x-2 transition-transform" />
+                    Execute Render
+                    <ChevronRight size={16} />
                   </>
                 )}
               </button>
@@ -298,43 +242,40 @@ export default function StudioPage() {
         </aside>
 
         {/* Main Canvas */}
-        <main className="flex-grow flex flex-col items-center justify-center p-12 relative overflow-hidden bg-[#020202]">
+        <main className="flex-grow flex flex-col items-center justify-center p-12 relative overflow-hidden bg-black">
           {state === 'idle' && (
-            <div className="text-center max-w-xl space-y-12">
-              <div className="w-40 h-40 bg-white/[0.03] border border-white/5 rounded-[4rem] flex items-center justify-center mx-auto shadow-2xl">
-                <Upload size={64} className="text-gray-800" />
+            <div className="text-center space-y-8">
+              <div className="w-32 h-32 bg-white/5 border border-white/10 rounded-3xl flex items-center justify-center mx-auto">
+                <Upload size={48} className="text-gray-800" />
               </div>
-              <div className="space-y-4">
-                <h2 className="text-4xl font-black text-white uppercase tracking-tighter">OS_READY_FOR_INPUT</h2>
-                <p className="text-gray-600 text-[10px] font-black uppercase tracking-[0.5em] leading-loose max-w-sm mx-auto">
-                  Define spatial vectors in the configuration console to begin architectural synthesis.
+              <div>
+                <h2 className="text-3xl font-black text-white uppercase tracking-tight mb-2">OS Ready for Input</h2>
+                <p className="text-[10px] font-mono uppercase tracking-[0.5em] text-gray-700">
+                  Configure parameters to begin
                 </p>
               </div>
             </div>
           )}
 
           {state === 'loading' && (
-            <div className="text-center space-y-8">
-              <Loader2 size={64} className="animate-spin text-indigo-500 mx-auto" />
-              <p className="text-xl font-black text-white uppercase tracking-widest">Generating...</p>
-            </div>
+            <LoadingAnimation elapsedTime={elapsedTime} estimatedRemaining={estimatedTime} />
           )}
 
           {state === 'success' && generatedImage && (
-            <div className="w-full max-w-6xl space-y-8">
-              <div className="relative group aspect-video rounded-[4rem] overflow-hidden border border-white/10 shadow-2xl bg-black/40">
+            <div className="w-full max-w-6xl space-y-6">
+              <div className="relative group aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black">
                 <img src={generatedImage} className="w-full h-full object-contain" alt="Generated" />
                 <button
                   onClick={() => setIsEnlarged(true)}
-                  className="absolute top-8 right-8 p-6 bg-black/60 backdrop-blur-3xl text-white rounded-[1.5rem] hover:bg-white hover:text-black border border-white/10 transition-all opacity-0 group-hover:opacity-100"
+                  className="absolute top-6 right-6 p-4 bg-black/60 backdrop-blur-xl text-white rounded-xl hover:bg-white hover:text-black border border-white/10 transition-all opacity-0 group-hover:opacity-100"
                 >
-                  <Maximize2 size={24} />
+                  <Maximize2 size={20} />
                 </button>
               </div>
-              <div className="flex items-center justify-center gap-8">
+              <div className="flex items-center justify-center">
                 <button
                   onClick={() => setState('idle')}
-                  className="px-16 py-6 bg-white text-black font-black text-[11px] uppercase tracking-[0.8em] rounded-full hover:bg-gray-200 transition-all shadow-2xl active:scale-95"
+                  className="px-12 py-4 bg-white text-black font-black text-xs uppercase tracking-[0.4em] rounded-full hover:shadow-glow transition-all"
                 >
                   New Render
                 </button>
@@ -344,11 +285,11 @@ export default function StudioPage() {
 
           {state === 'error' && (
             <div className="text-center space-y-6">
-              <div className="text-red-500 text-6xl">⚠</div>
+              <div className="text-red-500 text-5xl">⚠</div>
               <p className="text-xl font-black text-white uppercase">Generation Failed</p>
               <button
                 onClick={() => setState('idle')}
-                className="px-12 py-4 bg-white/10 border border-white/20 text-white font-bold uppercase tracking-widest rounded-full hover:bg-white/20 transition-all"
+                className="px-10 py-3 bg-white/10 border border-white/20 text-white font-bold uppercase rounded-full hover:bg-white/20 transition-all"
               >
                 Try Again
               </button>
@@ -360,9 +301,9 @@ export default function StudioPage() {
             <div className="fixed inset-0 z-[100] bg-black/98 backdrop-blur-3xl flex items-center justify-center p-10">
               <button
                 onClick={() => setIsEnlarged(false)}
-                className="absolute top-12 right-12 p-8 bg-white/5 border border-white/10 text-white rounded-[2rem] hover:bg-red-600 hover:border-red-500 transition-all"
+                className="absolute top-10 right-10 p-6 bg-white/5 border border-white/10 text-white rounded-2xl hover:bg-red-600 transition-all"
               >
-                <X size={32} />
+                <X size={28} />
               </button>
               <img src={generatedImage} className="max-w-full max-h-full object-contain" alt="Fullscreen" />
             </div>
@@ -373,72 +314,40 @@ export default function StudioPage() {
   )
 }
 
-function CollapsibleSection({
-  label,
-  isOpen,
-  onToggle,
-  selected,
-  children
-}: {
-  label: string
-  isOpen: boolean
-  onToggle: () => void
-  selected: string
-  children: React.ReactNode
-}) {
-  return (
-    <div>
-      <div className="px-1 mb-4">
-        <span className="text-[8px] font-black uppercase tracking-[0.5em] text-gray-700">{label}</span>
-      </div>
+function CustomSelect({ value, options, onChange }: { value: string; options: string[]; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false)
 
-      {/* Collapsed Header */}
+  return (
+    <div className="relative">
       <button
         type="button"
-        onClick={onToggle}
-        className="w-full flex items-center justify-between px-8 py-6 bg-white/[0.02] border border-white/5 rounded-3xl text-left group hover:bg-white/5 transition-all mb-4"
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-sm font-bold uppercase tracking-wider text-amber-500 hover:bg-black/60 hover:border-emerald-500/30 transition-all"
       >
-        <span className="text-[11px] font-black uppercase tracking-[0.3em] text-indigo-400 group-hover:text-indigo-300 transition-colors">
-          {selected}
-        </span>
-        {isOpen ? (
-          <ChevronUp size={16} className="text-gray-700 group-hover:text-white transition-colors" />
-        ) : (
-          <ChevronDown size={16} className="text-gray-700 group-hover:text-white transition-colors" />
-        )}
+        {value}
+        <ChevronDown size={14} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
-
-      {/* Expanded Options */}
-      {isOpen && (
-        <div className="bg-white/[0.01] border border-white/5 rounded-[3rem] p-2 mb-4 shadow-inner">
-          {children}
+      {open && (
+        <div className="absolute z-50 w-full mt-2 bg-black border border-white/10 rounded-lg overflow-hidden shadow-2xl max-h-60 overflow-y-auto">
+          {options.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => {
+                onChange(opt)
+                setOpen(false)
+              }}
+              className={`w-full px-4 py-3 text-left text-xs font-black uppercase tracking-wider transition-all ${
+                value === opt
+                  ? 'bg-white text-black'
+                  : 'text-gray-600 hover:bg-white/5 hover:text-white'
+              }`}
+            >
+              {opt}
+            </button>
+          ))}
         </div>
       )}
     </div>
-  )
-}
-
-function RadioOption({
-  label,
-  selected,
-  onClick
-}: {
-  label: string
-  selected: boolean
-  onClick: () => void
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="w-full flex items-center justify-between px-8 py-5 text-left hover:bg-white/5 transition-colors rounded-2xl border-b border-white/5 last:border-none"
-    >
-      <span className={`text-[11px] font-black uppercase tracking-[0.2em] ${selected ? 'text-white' : 'text-gray-600'}`}>
-        {label}
-      </span>
-      {selected && (
-        <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></div>
-      )}
-    </button>
   )
 }
