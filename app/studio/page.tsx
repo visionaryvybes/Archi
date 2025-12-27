@@ -10,21 +10,26 @@ type Tab = 'workspace' | 'vault'
 
 const RENDER_TYPES = ['Interior Design', '2D/3D Floor Plan', 'Exterior/Architectural', 'Technical Blueprint', 'Landscape/Garden']
 const AESTHETICS = ['Modern Minimalist', 'Scandinavian', 'Industrial', 'Bauhaus', 'Brutalist', 'Classic European']
+const ROOM_TYPES = ['Living Room', 'Kitchen', 'Bedroom', 'Bathroom', 'Office', 'Dining Room', 'Home Theater', 'Gym', 'Entryway', 'Outdoor/Patio']
 
 export default function StudioPage() {
   const [activeTab, setActiveTab] = useState<Tab>('workspace')
   const [state, setState] = useState<AppState>('idle')
   const [prompt, setPrompt] = useState('')
-  const [renderType, setRenderType] = useState('2D/3D Floor Plan')
+  const [renderType, setRenderType] = useState('Interior Design')
   const [aesthetic, setAesthetic] = useState('Modern Minimalist')
+  const [roomType, setRoomType] = useState('Living Room')
   const [aspectRatio, setAspectRatio] = useState('16:9')
-  const [quality, setQuality] = useState('1K SD')
+  const [quality, setQuality] = useState('2K HD')
   const [sourceImage, setSourceImage] = useState<string | null>(null)
   const [generatedImage, setGeneratedImage] = useState<string | null>(null)
   const [isEnlarged, setIsEnlarged] = useState(false)
   const [elapsedTime, setElapsedTime] = useState(0)
   const [estimatedTime, setEstimatedTime] = useState(45)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Show room type selector only for Interior Design and Floor Plan
+  const showRoomType = renderType === 'Interior Design' || renderType === '2D/3D Floor Plan'
 
   // Timer logic
   useEffect(() => {
@@ -60,10 +65,13 @@ export default function StudioPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `${renderType}. ${aesthetic} style. ${prompt}`,
-          style: aesthetic.toLowerCase(),
+          prompt,
+          renderType,
+          aesthetic,
+          roomType,
           imageBase64,
-          aspectRatio
+          aspectRatio,
+          quality
         })
       })
 
@@ -150,6 +158,9 @@ export default function StudioPage() {
               </div>
               <div className="space-y-3">
                 <CustomSelect value={renderType} options={RENDER_TYPES} onChange={setRenderType} />
+                {showRoomType && (
+                  <CustomSelect value={roomType} options={ROOM_TYPES} onChange={setRoomType} />
+                )}
                 <CustomSelect value={aesthetic} options={AESTHETICS} onChange={setAesthetic} />
               </div>
             </div>

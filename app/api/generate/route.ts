@@ -3,32 +3,80 @@ import { GoogleGenAI } from '@google/genai'
 
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' })
 
-const STYLE_PROMPTS: Record<string, string> = {
-  modern: 'sleek contemporary design with clean lines, minimalist furniture, neutral palette with accent colors, floor-to-ceiling windows, polished concrete or hardwood floors',
-  minimalist: 'ultra-minimal design, monochromatic color scheme, essential furniture only, negative space emphasis, hidden storage, seamless surfaces',
-  industrial: 'exposed brick walls, metal beams, concrete floors, vintage factory elements, Edison bulbs, raw materials, leather and metal furniture',
-  scandinavian: 'light wood tones, white walls, cozy textiles, hygge atmosphere, functional design, natural materials, subtle pastel accents',
-  japandi: 'Japanese-Scandinavian fusion, wabi-sabi elements, natural materials, muted earth tones, low furniture, zen garden influences, paper screens',
-  bohemian: 'eclectic mix of patterns, rich jewel tones, layered textiles, vintage furniture, plants everywhere, macrame, global influences',
-  luxury: 'high-end materials, marble surfaces, gold accents, crystal chandeliers, velvet upholstery, custom millwork, statement art pieces',
-  coastal: 'light and airy, beach-inspired colors, natural textures, weathered wood, blue and white palette, nautical elements, linen fabrics',
-  'mid-century': '1950s-60s inspired, iconic furniture pieces, organic shapes, wood paneling, bold accent colors, geometric patterns, sunburst motifs',
-  rustic: 'reclaimed wood, stone fireplace, natural materials, warm earth tones, handcrafted elements, cozy textiles, farmhouse charm',
-  contemporary: 'current design trends, mix of textures, statement lighting, bold art, comfortable luxury, curated accessories, tech integration',
-  'art-deco': '1920s glamour, geometric patterns, rich colors, metallic accents, lacquered surfaces, bold symmetry, velvet and mirror details',
+// Room-specific lifestyle details (inspired by veo-studio)
+const ROOM_DETAILS: Record<string, string> = {
+  'Living Room': 'soft textured throw pillows on a designer sofa, open coffee table books (architecture/design magazines), a high-fidelity record player or modern speaker, warm morning sunlight through floor-to-ceiling windows, lush indoor plants like fiddle leaf figs or monstera, soft woven area rug with subtle pattern, curated artwork on walls, ambient table lamps, designer furniture with rich textures',
+  'Kitchen': 'high-end marble or quartz countertops, steaming espresso machine, professional chef knives on magnetic strip, copper or stainless cookware hanging, wooden cutting boards with organic textures, integrated ambient LED strips under cabinets, fresh herbs in ceramic pots on windowsill, fruit bowl with fresh produce, designer bar stools, high-end appliances',
+  'Bedroom': 'rumpled high-thread-count linen sheets, stack of hardcover design books on nightstand, ambient warm bedside lighting, soft wool throw blanket, high-end drapes with realistic folds, plush pillows, modern headboard, subtle wall sconces, personal touches like framed photos, cozy reading chair',
+  'Bathroom': 'steam on glass shower partition, plush rolled cotton towels, luxury soap dispensers and amenities, natural stone textures (marble/travertine), subtle water droplets in sink, rain shower head, modern freestanding tub, designer fixtures, ambient lighting, fresh flowers or plants, high-end mirrors',
+  'Office': 'modern adjustable desk lamp, high-resolution monitors, designer ergonomic chair, personal artifacts like fountain pen and leather notebook, clean cable management, focused task lighting, bookshelf with design books, indoor plant, minimalist desk setup, abstract art on walls',
+  'Dining Room': 'designer pendant lighting above table, place settings with high-end dinnerware, fresh floral centerpiece, elegant chairs with upholstered seats, wine glasses and decanter, textured table runner, ambient candlelight, sideboard with decorative objects, artwork on walls',
+  'Home Theater': 'plush deep-seated velvet chairs or sectional, subtle floor-level track lighting, high-end speaker system, dark walnut or fabric wall panels, professional acoustic treatments, popcorn machine or bar area, movie posters in frames, thick curtains, cozy blankets',
+  'Gym': 'professional Technogym-style equipment, textured rubber flooring, wall-sized mirrors with crisp reflections, hydration station with luxury water bottles, yoga mats rolled neatly, kettlebells on rack, motivational artwork, natural light from large windows, indoor plants, towel station',
+  'Entryway': 'designer console table, large statement mirror, fresh flowers in modern vase, key tray or bowl, artwork or gallery wall, coat hooks with designer jackets, bench with plush cushion, ambient lighting, runner rug with pattern',
+  'Outdoor/Patio': 'comfortable outdoor furniture with weather-resistant cushions, string lights or modern outdoor lighting, potted plants and planters, outdoor rug, fire pit or outdoor heater, dining table with place settings, lanterns or candles, lush greenery, natural wood or stone elements'
 }
 
-const LIFE_PROPS = `
-Include realistic lifestyle elements: styled coffee table books, fresh flowers in a vase,
-a casually draped throw blanket, ambient lighting from multiple sources, subtle artwork on walls,
-potted plants adding greenery, personal touches like candles or decorative objects,
-natural light casting soft shadows, professional interior photography quality.
-`
+// Enhanced aesthetic descriptions
+const AESTHETIC_DETAILS: Record<string, string> = {
+  'Modern Minimalist': 'clean lines, monochromatic palette with strategic accent colors, minimalist furniture with perfect proportions, hidden storage solutions, seamless surfaces, negative space emphasis, high-quality materials (brushed steel, polished concrete, natural wood), floor-to-ceiling windows, indirect lighting, gallery-like atmosphere',
+  'Scandinavian': 'light wood tones (birch, ash, pine), white or light gray walls, cozy textiles (chunky knit throws, sheepskin), hygge atmosphere, functional minimalist design, natural materials, subtle pastel accents (dusty pink, sage green), abundant natural light, simple ceramics, candles, plants',
+  'Industrial': 'exposed brick walls, metal beams and ductwork, polished concrete floors, vintage factory elements, Edison bulbs and industrial lighting, raw materials (steel, iron, reclaimed wood), leather and metal furniture, urban loft aesthetic, high ceilings, large factory windows',
+  'Bauhaus': 'geometric forms, primary colors with black/white/gray, functional furniture with tubular steel, asymmetric compositions, sans-serif typography in artwork, emphasis on geometric shapes, modernist art pieces, clean lines, form follows function philosophy',
+  'Brutalist': 'exposed concrete surfaces, bold geometric forms, monolithic structures, raw unfinished materials, dramatic shadows and light, minimal ornamentation, strong angular shapes, textural concrete, monochromatic palette, architectural statement pieces',
+  'Classic European': 'ornate moldings and trim, crystal chandeliers, rich wood paneling, marble surfaces, damask or toile fabrics, antique furniture pieces, Persian rugs, gold or brass accents, oil paintings in gilded frames, luxurious drapery, classical architectural details'
+}
+
+// Render type configurations
+const RENDER_TYPE_CONFIGS: Record<string, { prefix: string; instructions: string }> = {
+  'Interior Design': {
+    prefix: 'PHOTOREALISTIC HIGH-END INTERIOR DESIGN',
+    instructions: 'Architectural Digest quality photography. Magazine-worthy composition. Perfect lighting with natural volumetric sunlight and soft global illumination. Ultra-detailed fabric weaves, polished stone, wood grain. No empty spaces - lived-in and luxurious feel. Professional interior photography with proper depth of field.'
+  },
+  '2D/3D Floor Plan': {
+    prefix: '3D ISOMETRIC ARCHITECTURAL FLOOR PLAN',
+    instructions: 'Clean architectural top-down isometric view. Realistic furniture models with proper scale. Material callouts and labels. Soft ambient occlusion shadows. Professional architectural visualization style. Color-coded zones. Measurements and dimensions visible.'
+  },
+  'Exterior/Architectural': {
+    prefix: 'PHOTOREALISTIC EXTERIOR ARCHITECTURE',
+    instructions: 'Golden hour lighting (sunset or sunrise). Detailed landscaping with specific plants, gravel paths, and outdoor lighting. Sharp focus on textures like wood siding, concrete, glass, metal. Professional architectural photography. Dramatic sky with volumetric clouds. Realistic reflections in windows.'
+  },
+  'Technical Blueprint': {
+    prefix: 'TECHNICAL ARCHITECTURAL BLUEPRINT',
+    instructions: 'CAD-style technical drafting on dark charcoal or blue background. Crisp white and cyan vector lines. Structural measurements and dimensions. Cross-sections and elevation views. Professional engineering aesthetic. Grid lines and scale indicators. Annotation callouts.'
+  },
+  'Landscape/Garden': {
+    prefix: 'LANDSCAPE ARCHITECTURE DESIGN',
+    instructions: 'Detailed botanical elements with realistic flora. Stone masonry and hardscaping. Water features with accurate reflections. Natural lighting conditions. Seasonal planting scheme. Outdoor furniture and structures. Pathways and circulation. Mature trees and layered plantings.'
+  }
+}
+
+// Map aspect ratios
+const ASPECT_RATIO_MAP: Record<string, string> = {
+  '16:9': '16:9',
+  '1:1': '1:1',
+  '9:16': '9:16'
+}
+
+// Map quality to image generation parameters
+const QUALITY_MAP: Record<string, string> = {
+  '1K SD': 'Standard definition, 1024x576 resolution',
+  '2K HD': 'High definition, 2048x1152 resolution, enhanced detail',
+  '4K UHD': 'Ultra high definition, 4096x2304 resolution, maximum fidelity, photorealistic detail'
+}
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { prompt, style, imageBase64, aspectRatio = '16:9' } = body
+    const {
+      prompt,
+      renderType = 'Interior Design',
+      aesthetic = 'Modern Minimalist',
+      roomType = 'Living Room',
+      imageBase64,
+      aspectRatio = '16:9',
+      quality = '2K HD'
+    } = body
 
     if (!process.env.GEMINI_API_KEY) {
       return NextResponse.json(
@@ -37,26 +85,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const styleDescription = STYLE_PROMPTS[style] || STYLE_PROMPTS.modern
+    // Get render type configuration
+    const renderConfig = RENDER_TYPE_CONFIGS[renderType] || RENDER_TYPE_CONFIGS['Interior Design']
 
+    // Get aesthetic details
+    const aestheticDescription = AESTHETIC_DETAILS[aesthetic] || AESTHETIC_DETAILS['Modern Minimalist']
+
+    // Get room-specific details (only for interior renders)
+    const roomDetails = renderType === 'Interior Design' || renderType === '2D/3D Floor Plan'
+      ? (ROOM_DETAILS[roomType] || ROOM_DETAILS['Living Room'])
+      : ''
+
+    // Get quality requirements
+    const qualityDescription = QUALITY_MAP[quality] || QUALITY_MAP['2K HD']
+
+    // Construct comprehensive prompt
     const fullPrompt = `
-Create a photorealistic interior design render with the following specifications:
+${renderConfig.prefix} - ${aesthetic} STYLE
 
-STYLE: ${styleDescription}
+CRITICAL SPECIFICATIONS:
+${renderConfig.instructions}
 
-USER REQUEST: ${prompt}
+AESTHETIC DIRECTION: ${aestheticDescription}
 
-REQUIREMENTS:
-- Professional architectural photography quality
-- Perfect lighting with natural and artificial sources
-- 8K resolution quality
-- ${LIFE_PROPS}
-- Realistic materials and textures
-- Proper scale and proportions
-- Magazine-worthy composition
-- Aspect ratio: ${aspectRatio}
+${roomDetails ? `ROOM ELEMENTS TO INCLUDE: ${roomDetails}` : ''}
 
-Generate a stunning, photorealistic interior that would impress professional designers.
+QUALITY REQUIREMENTS: ${qualityDescription}
+ASPECT RATIO: ${ASPECT_RATIO_MAP[aspectRatio] || '16:9'}
+
+USER DESIGN BRIEF: ${prompt}
+
+EXECUTION MANDATE: Generate a stunning, photorealistic ${renderType.toLowerCase()} that showcases ${aesthetic} design principles. Every detail must feel intentional, luxurious, and professionally composed. This should be portfolio-worthy work that could appear in Architectural Digest, Dezeen, or ArchDaily.
     `.trim()
 
     const startTime = Date.now()
