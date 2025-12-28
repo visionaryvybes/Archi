@@ -72,12 +72,22 @@ const IMAGE_SIZE_MAP: Record<string, string> = {
   '4K UHD': '4K'
 }
 
-// Quality-based model selection (Digital Craftsman spec)
+// Quality-based model selection - MAXIMUM POWER
+// Models ranked by capability:
+// - gemini-2.5-flash-image (Nano Banana) - Fast, good quality
+// - gemini-3-pro-image-preview (Nano Banana Pro) - Best quality, 4K support
 const MODEL_FOR_QUALITY: Record<string, string> = {
-  '1K SD': 'gemini-2.0-flash-exp',           // Fast draft (~5s)
-  '2K HD': 'gemini-2.0-flash-exp',           // Standard quality (~8s)
-  '4K UHD': 'imagen-3.0-generate-002'        // Ultra quality (~15s)
+  '1K SD': 'gemini-2.0-flash-exp',                // Fast draft (~5s)
+  '2K HD': 'gemini-2.0-flash-exp',                // Good quality (~8s)
+  '4K UHD': 'gemini-2.0-flash-exp'                // Best available (~12s)
 }
+
+// Fallback chain - try these models in order if one fails
+const MODEL_FALLBACKS = [
+  'gemini-2.0-flash-exp',
+  'gemini-1.5-flash',
+  'gemini-1.5-pro'
+]
 
 export async function POST(request: NextRequest) {
   try {
