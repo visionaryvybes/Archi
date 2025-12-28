@@ -72,22 +72,8 @@ const IMAGE_SIZE_MAP: Record<string, string> = {
   '4K UHD': '4K'
 }
 
-// Quality-based model selection - MAXIMUM POWER
-// Models ranked by capability:
-// - gemini-2.5-flash-image (Nano Banana) - Fast, good quality
-// - gemini-3-pro-image-preview (Nano Banana Pro) - Best quality, 4K support
-const MODEL_FOR_QUALITY: Record<string, string> = {
-  '1K SD': 'gemini-2.0-flash-exp',                // Fast draft (~5s)
-  '2K HD': 'gemini-2.0-flash-exp',                // Good quality (~8s)
-  '4K UHD': 'gemini-2.0-flash-exp'                // Best available (~12s)
-}
-
-// Fallback chain - try these models in order if one fails
-const MODEL_FALLBACKS = [
-  'gemini-2.0-flash-exp',
-  'gemini-1.5-flash',
-  'gemini-1.5-pro'
-]
+// Nano Banana Pro - THE BEST model for image generation
+const NANO_BANANA_PRO = 'gemini-3-pro-image-preview'
 
 export async function POST(request: NextRequest) {
   try {
@@ -193,11 +179,9 @@ EXECUTION MANDATE: Generate a stunning, photorealistic ${renderType.toLowerCase(
           },
         ]
 
-    // Select model based on quality setting
-    const selectedModel = MODEL_FOR_QUALITY[quality] || 'gemini-2.0-flash-exp'
-
+    // Use Nano Banana Pro - the best Gemini 3 image model
     const response = await genAI.models.generateContent({
-      model: selectedModel,
+      model: NANO_BANANA_PRO,
       contents,
       config: {
         responseModalities: ['image', 'text'],
