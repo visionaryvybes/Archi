@@ -158,7 +158,7 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Built with love message */}
+        {/* Copyright line */}
         <motion.div
           className="mt-8 text-center"
           initial={{ opacity: 0 }}
@@ -167,7 +167,7 @@ export function Footer() {
           transition={{ delay: 0.5 }}
         >
           <p className="text-xs text-slate-600">
-            Built with care in San Francisco. Powered by Nano Banana Pro.
+            © {currentYear} Visionary Studio
           </p>
         </motion.div>
       </div>

@@ -15,7 +15,7 @@ const faqs: FAQItem[] = [
     id: 'faq-1',
     question: 'How does the AI interior design work?',
     answer:
-      'Our AI analyzes your room photo and understands the spatial layout, existing furniture, and architectural elements. It then applies your chosen design style while preserving the room structure. The process uses Google\'s Nano Banana Pro (Gemini) multimodal AI to generate photorealistic results in seconds.',
+      'Our AI analyzes your room photo and understands the spatial layout, existing furniture, and architectural elements. It then applies your chosen design style while preserving the room structure. The process uses our proprietary AI engine to generate photorealistic results in seconds.',
   },
   {
     id: 'faq-2',

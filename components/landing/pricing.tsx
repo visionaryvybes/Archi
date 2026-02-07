@@ -236,11 +236,10 @@ export function Pricing() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Simple, Transparent{' '}
             <span className="gradient-text">Pricing</span>
           </h2>
           <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-8">
-            Start free and scale as you grow. No hidden fees, no surprises.
+            Start free. Upgrade when you're ready.
           </p>
 
           {/* Billing toggle */}

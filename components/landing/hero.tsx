@@ -124,7 +124,7 @@ export function Hero() {
                 <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/10">
                   <Sparkles className="w-4 h-4 text-emerald-400" />
                   <span className="shimmer-text text-sm font-medium font-mono">
-                    Powered by Nano Banana Pro
+                    AI-Powered Visualization
                   </span>
                 </span>
               </motion.div>
@@ -158,7 +158,7 @@ export function Hero() {
                 transition={{ delay: 0.8 }}
               >
                 Transform empty rooms into stunning, photorealistic interiors with AI.
-                55+ styles, 8 AI modes, and conversational editing — powered by Nano Banana Pro.
+                55+ styles, 8 AI modes, and conversational editing — powered by advanced AI.
               </motion.p>
 
               {/* CTAs */}
@@ -194,7 +194,7 @@ export function Hero() {
               >
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  10,000+ renders created
+                  Join the beta
                 </span>
                 <span className="w-1 h-1 rounded-full bg-slate-600" />
                 <span>No credit card required</span>

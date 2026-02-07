@@ -24,14 +24,14 @@ const DEMO_IMAGES = {
 };
 
 const styles = [
-  { id: 'modern', name: 'Modern', color: 'from-slate-600 to-slate-800', image: 'https://images.unsplash.com/photo-1600210492493-0946911123ea?w=200&h=200&fit=crop&q=60' },
-  { id: 'minimalist', name: 'Minimalist', color: 'from-gray-500 to-gray-700', image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=200&h=200&fit=crop&q=60' },
-  { id: 'industrial', name: 'Industrial', color: 'from-amber-700 to-stone-800', image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&h=200&fit=crop&q=60' },
-  { id: 'scandinavian', name: 'Scandinavian', color: 'from-amber-100 to-stone-300', image: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=200&h=200&fit=crop&q=60' },
-  { id: 'bohemian', name: 'Bohemian', color: 'from-orange-400 to-pink-500', image: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=200&h=200&fit=crop&q=60' },
-  { id: 'mid-century', name: 'Mid-Century', color: 'from-amber-500 to-teal-600', image: 'https://images.unsplash.com/photo-1600121848594-d8644e57abab?w=200&h=200&fit=crop&q=60' },
-  { id: 'coastal', name: 'Coastal', color: 'from-sky-400 to-blue-600', image: 'https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=200&h=200&fit=crop&q=60' },
-  { id: 'rustic', name: 'Rustic', color: 'from-amber-600 to-stone-700', image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=200&h=200&fit=crop&q=60' },
+  { id: 'modern', name: 'Modern', color: 'from-slate-600 to-slate-800', image: '' },
+  { id: 'minimalist', name: 'Minimalist', color: 'from-gray-500 to-gray-700', image: '' },
+  { id: 'industrial', name: 'Industrial', color: 'from-amber-700 to-stone-800', image: '' },
+  { id: 'scandinavian', name: 'Scandinavian', color: 'from-amber-100 to-stone-300', image: '' },
+  { id: 'bohemian', name: 'Bohemian', color: 'from-orange-400 to-pink-500', image: '' },
+  { id: 'mid-century', name: 'Mid-Century', color: 'from-amber-500 to-teal-600', image: '' },
+  { id: 'coastal', name: 'Coastal', color: 'from-sky-400 to-blue-600', image: '' },
+  { id: 'rustic', name: 'Rustic', color: 'from-amber-600 to-stone-700', image: '' },
 ];
 
 interface Step {
@@ -226,12 +226,10 @@ export function DemoSection() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Try it yourself.{' '}
-            <span className="gradient-text">Free, no sign-up required.</span>
+            See it in action
           </h2>
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            See the power of Nano Banana Pro in action. Upload a room photo and
-            transform it instantly with AI.
+            Upload a room photo and transform it in seconds.
           </p>
 
           {/* Demo limit indicator */}
@@ -379,11 +377,15 @@ export function DemoSection() {
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
                     >
-                      <img
-                        src={style.image}
-                        alt={style.name}
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
+                      {style.image ? (
+                        <img
+                          src={style.image}
+                          alt={style.name}
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className={`absolute inset-0 bg-gradient-to-br ${style.color}`} />
+                      )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute inset-0 flex items-end justify-center pb-3">
                         <span className="text-white font-medium text-sm drop-shadow-lg">{style.name}</span>

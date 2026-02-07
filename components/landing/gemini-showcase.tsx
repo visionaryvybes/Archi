@@ -216,16 +216,15 @@ export function GeminiShowcase() {
             transition={{ duration: 0.4, delay: 0.2 }}
           >
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-sm text-slate-300">Nano Banana Pro</span>
+            <span className="text-sm text-slate-300">AI Engine</span>
           </motion.div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Powered by{' '}
-            <span className="gradient-text">Nano Banana Pro</span>
+            Why{' '}
+            <span className="gradient-text">Visionary Studio</span>
           </h2>
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            Experience the next generation of AI-driven interior design with
-            Google&apos;s most advanced multimodal image generation model.
+            Speed, intelligence, and quality — all in one platform.
           </p>
         </motion.div>
 

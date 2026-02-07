@@ -23,7 +23,7 @@ const modes: Mode[] = [
     icon: <Image className="w-5 h-5" />,
     title: 'Stunning Room Renders',
     description:
-      'Transform any room photo into a beautifully redesigned space with Nano Banana Pro. Upload your image and watch as AI reimagines it in your chosen style.',
+      'Transform any room photo into a beautifully redesigned space with AI. Upload your image and watch as AI reimagines it in your chosen style.',
     features: [
       '4K resolution output',
       '55+ design styles',
@@ -112,13 +112,7 @@ function ImageModePreview() {
 
 function VideoModePreview() {
   return (
-    <div className="relative aspect-video rounded-xl overflow-hidden">
-      {/* Background image */}
-      <img
-        src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=600&h=400&fit=crop&q=80"
-        alt="Room preview"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+    <div className="relative aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900">
       <div className="absolute inset-0 bg-black/40" />
 
       {/* Video preview mockup */}
@@ -171,13 +165,7 @@ function VideoModePreview() {
 
 function ThreeDModePreview() {
   return (
-    <div className="relative aspect-video rounded-xl overflow-hidden">
-      {/* Background image */}
-      <img
-        src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop&q=80"
-        alt="3D Room"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+    <div className="relative aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900">
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/60 to-cyan-900/60" />
 
       {/* 3D indicator */}
@@ -239,12 +227,10 @@ export function ModesShowcase() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Three Powerful{' '}
-            <span className="gradient-text">Modes</span>
+            Three <span className="gradient-text">Modes</span>
           </h2>
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            Choose the perfect way to visualize your design ideas, from static images
-            to immersive 3D experiences.
+            From static images to immersive 3D walkthroughs.
           </p>
         </motion.div>
 

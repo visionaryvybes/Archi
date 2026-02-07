@@ -110,7 +110,7 @@ export function FinalCTA() {
 
           {/* Subheadline */}
           <p className="text-lg sm:text-xl text-slate-300 mb-10 max-w-xl mx-auto">
-            Join thousands of designers and architects already transforming spaces with AI.
+            Start transforming spaces with AI-powered interior design.
           </p>
 
           {/* Email capture form */}
@@ -209,7 +209,7 @@ export function FinalCTA() {
             viewport={{ once: true }}
             transition={{ delay: 0.5 }}
           >
-            {['10,000+ designers', 'Free tier available', '4.9 average rating'].map((item) => (
+            {['Free to start', 'No credit card required', 'Cancel anytime'].map((item) => (
               <div key={item} className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 <span>{item}</span>

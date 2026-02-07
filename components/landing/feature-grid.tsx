@@ -84,8 +84,8 @@ const features: Feature[] = [
   {
     id: 'gpu',
     icon: <Cpu className="w-6 h-6" />,
-    title: 'Nano Banana Pro Engine',
-    description: 'Powered by Google\'s most advanced Gemini image generation model for unmatched quality.',
+    title: 'AI Render Engine',
+    description: 'Enterprise-grade AI for unmatched rendering quality.',
     size: 'small',
   },
 ];
@@ -158,7 +158,7 @@ function FeatureCard({ feature, index }: { feature: Feature; index: number }) {
         {feature.size === 'large' && (
           <div className="mt-6 pt-6 border-t border-slate-800">
             <div className="flex items-center gap-4">
-              {['2K', '4K', '8K'].map((res, i) => (
+              {['1K', '2K', '4K'].map((res, i) => (
                 <motion.div
                   key={res}
                   className={`px-4 py-2 rounded-lg ${
@@ -226,16 +226,14 @@ export function FeatureGrid() {
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <span className="text-sm text-slate-300">Everything you need</span>
+            <span className="text-sm text-slate-300">Features</span>
           </motion.div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Built for{' '}
-            <span className="gradient-text">Professionals</span>
+            <span className="gradient-text">Everything You Need</span>
           </h2>
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            Powerful features designed for designers, architects, and real estate
-            professionals who demand the best.
+            A complete toolkit for AI-powered interior visualization.
           </p>
         </motion.div>
 
@@ -246,25 +244,6 @@ export function FeatureGrid() {
           ))}
         </div>
 
-        {/* Bottom CTA */}
-        <motion.div
-          className="mt-12 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <p className="text-slate-400 mb-6">
-            And many more features. Check out our full feature list.
-          </p>
-          <motion.button
-            className="btn-gradient-border px-6 py-3 rounded-xl font-medium text-white"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            View all features
-          </motion.button>
-        </motion.div>
       </div>
     </section>
   );
