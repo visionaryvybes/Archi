@@ -1,305 +1,135 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import * as Switch from '@radix-ui/react-switch';
-import { Check, ArrowRight } from 'lucide-react';
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import Link from 'next/link'
 
-interface PricingFeature {
-  text: string;
-  included: boolean;
-}
-
-interface PricingTier {
-  id: string;
-  name: string;
-  description: string;
-  monthlyPrice: number | null;
-  yearlyPrice: number | null;
-  features: PricingFeature[];
-  cta: string;
-  highlighted?: boolean;
-  badge?: string;
-}
-
-const tiers: PricingTier[] = [
+const tiers = [
   {
-    id: 'free',
     name: 'Free',
-    description: 'Perfect for trying out Visionary Studio',
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    features: [
-      { text: '5 generations per month', included: true },
-      { text: 'Standard quality output', included: true },
-      { text: '15 design styles', included: true },
-      { text: 'Basic support', included: true },
-      { text: 'Watermarked images', included: true },
-      { text: 'API access', included: false },
-      { text: 'Chat AI editing', included: false },
-      { text: 'Inpaint & outpaint', included: false },
-    ],
-    cta: 'Get Started Free',
+    description: 'For exploring',
+    monthly: 0,
+    yearly: 0,
+    features: ['5 renders per month', 'Standard resolution', '15 design styles', 'Watermarked output'],
+    cta: 'Get started',
+    href: '/studio',
   },
   {
-    id: 'pro',
     name: 'Pro',
-    description: 'For professionals and growing teams',
-    monthlyPrice: 29,
-    yearlyPrice: 24,
-    features: [
-      { text: 'Unlimited generations', included: true },
-      { text: '4K quality output', included: true },
-      { text: '55+ design styles', included: true },
-      { text: 'Priority support', included: true },
-      { text: 'No watermarks', included: true },
-      { text: 'API access', included: true },
-      { text: 'Chat AI editing', included: true },
-      { text: 'Inpaint & outpaint', included: true },
-    ],
-    cta: 'Start Pro Trial',
+    description: 'For professionals',
+    monthly: 29,
+    yearly: 24,
+    features: ['Unlimited renders', '4K resolution', '55+ styles', 'Conversational editing', 'No watermark', 'API access'],
+    cta: 'Start free trial',
+    href: '/studio',
     highlighted: true,
-    badge: 'Most Popular',
   },
   {
-    id: 'enterprise',
     name: 'Enterprise',
-    description: 'For large organizations',
-    monthlyPrice: null,
-    yearlyPrice: null,
-    features: [
-      { text: 'Everything in Pro', included: true },
-      { text: 'Custom model training', included: true },
-      { text: 'Dedicated GPU clusters', included: true },
-      { text: 'SLA guarantee', included: true },
-      { text: 'SSO & SAML', included: true },
-      { text: 'Custom integrations', included: true },
-      { text: 'Dedicated account manager', included: true },
-      { text: 'On-premise deployment', included: true },
-    ],
-    cta: 'Contact Sales',
+    description: 'For teams',
+    monthly: null,
+    yearly: null,
+    features: ['Everything in Pro', 'Custom model training', 'SSO & SAML', 'SLA guarantee', 'Dedicated support', 'On-premise option'],
+    cta: 'Contact us',
+    href: '/contact',
   },
-];
-
-function AnimatedCheckmark({ delay = 0 }: { delay?: number }) {
-  return (
-    <motion.div
-      className="w-5 h-5 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center flex-shrink-0"
-      initial={{ scale: 0 }}
-      whileInView={{ scale: 1 }}
-      viewport={{ once: true }}
-      transition={{
-        delay,
-        type: 'spring',
-        stiffness: 300,
-        damping: 20,
-      }}
-    >
-      <motion.div
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: delay + 0.2, duration: 0.3 }}
-      >
-        <Check className="w-3 h-3 text-white" />
-      </motion.div>
-    </motion.div>
-  );
-}
-
-function PricingCard({ tier, isYearly, index }: { tier: PricingTier; isYearly: boolean; index: number }) {
-  const price = isYearly ? tier.yearlyPrice : tier.monthlyPrice;
-  const savings = tier.monthlyPrice && tier.yearlyPrice
-    ? Math.round((1 - tier.yearlyPrice / tier.monthlyPrice) * 100)
-    : 0;
-
-  return (
-    <motion.div
-      className={`relative flex flex-col rounded-2xl p-1 ${
-        tier.highlighted
-          ? 'bg-gradient-to-b from-emerald-500 via-cyan-500 to-blue-500'
-          : ''
-      }`}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.1,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-    >
-      {/* Badge */}
-      {tier.badge && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-          <motion.div
-            className="px-4 py-1 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 text-white text-sm font-medium shadow-glow"
-            initial={{ y: -10, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-          >
-            {tier.badge}
-          </motion.div>
-        </div>
-      )}
-
-      <div
-        className={`flex flex-col h-full rounded-xl p-6 lg:p-8 ${
-          tier.highlighted ? 'bg-slate-900' : 'glass'
-        }`}
-      >
-        {/* Header */}
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold text-white mb-2">{tier.name}</h3>
-          <p className="text-sm text-slate-400">{tier.description}</p>
-        </div>
-
-        {/* Price */}
-        <div className="mb-6">
-          {price !== null ? (
-            <div className="flex items-baseline gap-1">
-              <span className="text-4xl lg:text-5xl font-bold text-white">${price}</span>
-              <span className="text-slate-400">/mo</span>
-            </div>
-          ) : (
-            <div className="text-4xl lg:text-5xl font-bold text-white">Custom</div>
-          )}
-          {isYearly && tier.monthlyPrice && tier.yearlyPrice && (
-            <motion.p
-              className="text-sm text-emerald-400 mt-1"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              Save {savings}% with yearly billing
-            </motion.p>
-          )}
-        </div>
-
-        {/* CTA */}
-        <motion.button
-          className={`w-full py-3 rounded-xl font-medium flex items-center justify-center gap-2 group mb-8 ${
-            tier.highlighted
-              ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-glow'
-              : 'btn-gradient-border text-white'
-          }`}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          {tier.cta}
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </motion.button>
-
-        {/* Features */}
-        <ul className="space-y-4 flex-1">
-          {tier.features.map((feature, i) => (
-            <li key={feature.text} className="flex items-start gap-3">
-              {feature.included ? (
-                <AnimatedCheckmark delay={0.1 + i * 0.05} />
-              ) : (
-                <div className="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center flex-shrink-0">
-                  <div className="w-2 h-0.5 bg-slate-600 rounded" />
-                </div>
-              )}
-              <span
-                className={`text-sm ${
-                  feature.included ? 'text-slate-300' : 'text-slate-500'
-                }`}
-              >
-                {feature.text}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </motion.div>
-  );
-}
+]
 
 export function Pricing() {
-  const [isYearly, setIsYearly] = useState(false);
+  const [yearly, setYearly] = useState(false)
 
   return (
-    <section className="relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden" id="pricing">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-slate-950 to-black" />
-      <div className="absolute inset-0 bg-mesh-gradient opacity-30" />
-
-      <div className="relative max-w-6xl mx-auto">
-        {/* Section header */}
+    <section className="py-24 md:py-32 border-t border-zinc-800/50" id="pricing">
+      <div className="max-w-5xl mx-auto px-6">
         <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
+          className="mb-12"
+          initial={{ opacity: 0, y: 8 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-            <span className="gradient-text">Pricing</span>
+          <p className="text-sm font-medium text-violet-400 mb-3">Pricing</p>
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-zinc-50 mb-4">
+            Start free. Upgrade when ready.
           </h2>
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-8">
-            Start free. Upgrade when you're ready.
-          </p>
 
-          {/* Billing toggle */}
-          <div className="inline-flex items-center gap-4 p-1.5 rounded-full bg-slate-800/50 border border-slate-700/50">
-            <span
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
-                !isYearly ? 'text-white' : 'text-slate-400'
-              }`}
+          <div className="flex items-center gap-3 mt-6">
+            <button
+              onClick={() => setYearly(false)}
+              className={`text-sm px-3 py-1.5 rounded-md transition-colors ${!yearly ? 'bg-zinc-800 text-zinc-50' : 'text-zinc-500 hover:text-zinc-400'}`}
             >
               Monthly
-            </span>
-            <Switch.Root
-              checked={isYearly}
-              onCheckedChange={setIsYearly}
-              className="relative w-12 h-6 bg-slate-700 rounded-full transition-colors data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-emerald-500 data-[state=checked]:to-cyan-500"
+            </button>
+            <button
+              onClick={() => setYearly(true)}
+              className={`text-sm px-3 py-1.5 rounded-md transition-colors ${yearly ? 'bg-zinc-800 text-zinc-50' : 'text-zinc-500 hover:text-zinc-400'}`}
             >
-              <Switch.Thumb className="block w-5 h-5 bg-white rounded-full shadow-lg transition-transform duration-300 translate-x-0.5 data-[state=checked]:translate-x-6" />
-            </Switch.Root>
-            <span
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
-                isYearly ? 'text-white' : 'text-slate-400'
-              }`}
-            >
-              Yearly
-              <span className="ml-1.5 px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-400">
-                Save 17%
-              </span>
-            </span>
+              Yearly <span className="text-violet-400 ml-1">-17%</span>
+            </button>
           </div>
         </motion.div>
 
-        {/* Pricing cards */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
-          {tiers.map((tier, index) => (
-            <PricingCard
-              key={tier.id}
-              tier={tier}
-              isYearly={isYearly}
-              index={index}
-            />
-          ))}
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-zinc-800/50 rounded-xl overflow-hidden border border-zinc-800">
+          {tiers.map((tier, index) => {
+            const price = yearly ? tier.yearly : tier.monthly
+            return (
+              <motion.div
+                key={tier.name}
+                className={`bg-[#09090b] p-8 flex flex-col ${tier.highlighted ? 'bg-zinc-900/30' : ''}`}
+                initial={{ opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.05, ease: 'easeOut' }}
+              >
+                <div className="mb-6">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-lg font-medium text-zinc-50">{tier.name}</h3>
+                    {tier.highlighted && (
+                      <span className="text-xs font-medium text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded">Popular</span>
+                    )}
+                  </div>
+                  <p className="text-sm text-zinc-500">{tier.description}</p>
+                </div>
 
-        {/* Money-back guarantee */}
-        <motion.div
-          className="mt-12 text-center"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-        >
-          <p className="text-slate-400 text-sm">
-            All paid plans come with a{' '}
-            <span className="text-emerald-400">30-day money-back guarantee</span>.
-            No questions asked.
-          </p>
-        </motion.div>
+                <div className="mb-6">
+                  {price !== null ? (
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-semibold text-zinc-50">${price}</span>
+                      <span className="text-sm text-zinc-500">/mo</span>
+                    </div>
+                  ) : (
+                    <span className="text-4xl font-semibold text-zinc-50">Custom</span>
+                  )}
+                </div>
+
+                <ul className="space-y-3 mb-8 flex-1">
+                  {tier.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2.5 text-sm text-zinc-400">
+                      <svg className="w-4 h-4 mt-0.5 text-zinc-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  href={tier.href}
+                  className={`block text-center text-sm font-medium px-4 py-2.5 rounded-lg transition-colors duration-150 ${
+                    tier.highlighted
+                      ? 'bg-zinc-50 text-zinc-950 hover:bg-white'
+                      : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'
+                  }`}
+                >
+                  {tier.cta}
+                </Link>
+              </motion.div>
+            )
+          })}
+        </div>
       </div>
     </section>
-  );
+  )
 }
 
-export default Pricing;
+export default Pricing

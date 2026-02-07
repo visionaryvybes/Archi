@@ -1,94 +1,51 @@
 import type { Metadata, Viewport } from 'next'
-import { DM_Sans, Outfit, JetBrains_Mono, Playfair_Display, Crimson_Text } from 'next/font/google'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 
-const dmSans = DM_Sans({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-dm-sans',
+  variable: '--font-inter',
   display: 'swap',
 })
 
-const outfit = Outfit({
+const jetbrains = JetBrains_Mono({
   subsets: ['latin'],
-  variable: '--font-outfit',
+  variable: '--font-jetbrains',
   display: 'swap',
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains-mono',
-  display: 'swap',
-})
-
-// Digital Craftsman fonts
-const playfairDisplay = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-playfair',
-  display: 'swap',
-  weight: ['400', '500', '600', '700', '800', '900'],
-})
-
-const crimsonText = Crimson_Text({
-  subsets: ['latin'],
-  variable: '--font-crimson',
-  display: 'swap',
-  weight: ['400', '600', '700'],
 })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://visionary-studio.vercel.app'),
-  title: 'Visionary Studio | AI Interior Design Platform',
-  description: 'Professional interior renders in 30 seconds. The only AI design tool using Google Gemini 2.0. Instant, photorealistic results.',
-  keywords: ['interior design', 'AI', 'render', 'architecture', 'Gemini', 'design tool'],
+  title: 'Visionary Studio — AI Interior Design',
+  description: 'Transform any room with AI. Upload a photo, choose a style, get a photorealistic render in seconds.',
+  keywords: ['interior design', 'AI', 'room design', 'architecture', 'visualization'],
   authors: [{ name: 'Visionary Studio' }],
-  creator: 'Visionary Studio',
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://visionary-studio.vercel.app',
     siteName: 'Visionary Studio',
-    title: 'Visionary Studio | AI Interior Design Platform',
-    description: 'Professional interior renders in 30 seconds. Powered by Google Gemini 2.0.',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Visionary Studio - AI Interior Design',
-      },
-    ],
+    title: 'Visionary Studio — AI Interior Design',
+    description: 'Transform any room with AI. Upload a photo, choose a style, get a photorealistic render in seconds.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Visionary Studio | AI Interior Design Platform',
-    description: 'Professional interior renders in 30 seconds. Powered by Google Gemini 2.0.',
-    images: ['/og-image.jpg'],
+    title: 'Visionary Studio — AI Interior Design',
+    description: 'Transform any room with AI in seconds.',
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
 }
 
 export const viewport: Viewport = {
-  themeColor: '#000000',
+  themeColor: '#09090b',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 5,
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${dmSans.variable} ${outfit.variable} ${jetbrainsMono.variable} ${playfairDisplay.variable} ${crimsonText.variable} dark`}
-      suppressHydrationWarning
-    >
-      <body className="font-sans antialiased bg-black text-white min-h-screen">
+    <html lang="en" className={`${inter.variable} ${jetbrains.variable} dark`} suppressHydrationWarning>
+      <body className="font-sans antialiased bg-[#09090b] text-zinc-50 min-h-screen">
         {children}
       </body>
     </html>
