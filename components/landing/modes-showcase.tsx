@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Upload, Palette, Sparkles } from 'lucide-react'
+import Image from 'next/image'
 
 const steps = [
   {
@@ -10,12 +11,15 @@ const steps = [
     title: 'Upload your room',
     description: 'Take a photo of any room — empty or furnished. Our AI understands spatial layout, lighting, and architectural features automatically.',
     visual: (
-      <div className="mt-5 aspect-[4/3] rounded-lg border border-dashed border-zinc-700 bg-zinc-900/50 flex flex-col items-center justify-center">
-        <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center mb-2">
-          <Upload className="w-5 h-5 text-zinc-500" />
-        </div>
-        <p className="text-xs text-zinc-600">Drop room photo here</p>
-        <p className="text-[10px] text-zinc-700 mt-1">JPG, PNG up to 10MB</p>
+      <div className="mt-5 aspect-[4/3] rounded-lg border border-dashed border-zinc-700 bg-zinc-900/50 relative overflow-hidden">
+        <Image
+          src="/images/landing/before-empty-living.jpg"
+          alt="Empty room upload preview"
+          fill
+          className="object-cover"
+          quality={85}
+          priority={false}
+        />
       </div>
     ),
   },
@@ -27,15 +31,22 @@ const steps = [
     visual: (
       <div className="mt-5 grid grid-cols-3 gap-1.5">
         {[
-          { name: 'Modern', color: 'from-zinc-600 to-zinc-800' },
-          { name: 'Scandi', color: 'from-stone-300 to-stone-500' },
-          { name: 'Industrial', color: 'from-amber-700 to-stone-800' },
-          { name: 'Japandi', color: 'from-stone-400 to-neutral-600' },
-          { name: 'Art Deco', color: 'from-yellow-600 to-amber-800' },
-          { name: 'Coastal', color: 'from-sky-400 to-blue-600' },
+          { name: 'Coastal', src: '/images/landing/style-coastal.jpg' },
+          { name: 'Art Deco', src: '/images/landing/style-artdeco.jpg' },
+          { name: 'Mid-Century', src: '/images/landing/style-midcentury.jpg' },
+          { name: 'Bohemian', src: '/images/landing/style-bohemian.jpg' },
+          { name: 'Luxury', src: '/images/landing/style-luxury.jpg' },
+          { name: 'Rustic', src: '/images/landing/style-rustic.jpg' },
         ].map((s) => (
-          <div key={s.name} className={`aspect-[3/2] rounded-md bg-gradient-to-br ${s.color} flex items-end p-1.5`}>
-            <span className="text-[9px] text-white/80 font-medium">{s.name}</span>
+          <div key={s.name} className="relative aspect-square rounded-md overflow-hidden border border-zinc-700 hover:border-violet-500/50 transition-colors">
+            <Image
+              src={s.src}
+              alt={`${s.name} style thumbnail`}
+              fill
+              className="object-cover"
+              quality={75}
+              sizes="(max-width: 768px) 100px, 120px"
+            />
           </div>
         ))}
       </div>
@@ -48,16 +59,18 @@ const steps = [
     description: 'In under 30 seconds, receive a photorealistic render. Download in 4K, refine with chat, or try another style instantly.',
     visual: (
       <div className="mt-5 aspect-[4/3] rounded-lg overflow-hidden border border-violet-500/20 relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 via-zinc-900 to-zinc-950" />
-        {/* Mini rendered room */}
-        <div className="absolute bottom-0 left-0 right-0 h-[40%] bg-[#1c1917]" />
-        <div className="absolute top-[15%] left-[25%] w-[50%] h-[35%] border border-violet-500/20 rounded-sm bg-violet-500/5" />
-        <div className="absolute bottom-[40%] left-[20%] w-[30%] h-[15%] rounded bg-zinc-700" />
-        <div className="absolute bottom-[40%] right-[18%] w-[15%] h-[10%] rounded-full bg-zinc-700/80" />
+        <Image
+          src="/images/landing/after-modern.jpg"
+          alt="Rendered room result"
+          fill
+          className="object-cover"
+          quality={85}
+          priority={false}
+        />
         <div className="absolute top-2 right-2 px-2 py-1 rounded text-[9px] bg-violet-500/20 text-violet-300 border border-violet-500/30">
           4K Ready
         </div>
-        <div className="absolute bottom-2 left-2 text-[9px] text-zinc-500">
+        <div className="absolute bottom-2 left-2 text-[9px] text-zinc-200 drop-shadow-lg">
           Modern Minimalist · 28s
         </div>
       </div>

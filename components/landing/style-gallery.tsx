@@ -1,8 +1,18 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
+
+const featuredStyles = [
+  { name: 'Coastal', image: '/images/landing/style-coastal.jpg' },
+  { name: 'Art Deco', image: '/images/landing/style-artdeco.jpg' },
+  { name: 'Mid-Century Modern', image: '/images/landing/style-midcentury.jpg' },
+  { name: 'Bohemian', image: '/images/landing/style-bohemian.jpg' },
+  { name: 'Luxury', image: '/images/landing/style-luxury.jpg' },
+  { name: 'Rustic', image: '/images/landing/style-rustic.jpg' },
+]
 
 const styleCategories = [
   {
@@ -10,7 +20,6 @@ const styleCategories = [
     styles: [
       { name: 'Modern Minimalist', color: 'from-zinc-700 to-zinc-900' },
       { name: 'Contemporary', color: 'from-slate-600 to-slate-800' },
-      { name: 'Mid-Century Modern', color: 'from-amber-700 to-orange-900' },
       { name: 'Urban Loft', color: 'from-stone-600 to-stone-800' },
     ],
   },
@@ -19,24 +28,20 @@ const styleCategories = [
     styles: [
       { name: 'Scandinavian', color: 'from-stone-200 to-stone-400' },
       { name: 'Japandi', color: 'from-stone-400 to-neutral-600' },
-      { name: 'Coastal', color: 'from-sky-400 to-blue-600' },
-      { name: 'Rustic Farmhouse', color: 'from-amber-600 to-yellow-800' },
     ],
   },
   {
     name: 'Classic',
     styles: [
-      { name: 'Art Deco', color: 'from-yellow-600 to-amber-800' },
       { name: 'Victorian', color: 'from-rose-700 to-rose-900' },
       { name: 'French Country', color: 'from-violet-300 to-violet-500' },
-      { name: 'Mediterranean', color: 'from-orange-400 to-terracotta' },
+      { name: 'Mediterranean', color: 'from-orange-400 to-orange-600' },
     ],
   },
   {
     name: 'Bold',
     styles: [
       { name: 'Industrial', color: 'from-zinc-500 to-zinc-700' },
-      { name: 'Bohemian', color: 'from-orange-400 to-pink-500' },
       { name: 'Maximalist', color: 'from-fuchsia-500 to-purple-700' },
       { name: 'Tropical', color: 'from-emerald-400 to-teal-600' },
     ],
@@ -73,7 +78,54 @@ export function StyleGallery() {
           </Link>
         </motion.div>
 
-        {/* Style grid */}
+        {/* Featured styles grid */}
+        <motion.div
+          className="mb-12"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {featuredStyles.map((style, index) => (
+              <motion.div
+                key={style.name}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.05, ease: 'easeOut' }}
+              >
+                <Link
+                  href="/studio"
+                  className="group relative aspect-[3/2] rounded-xl overflow-hidden border border-zinc-800 hover:border-violet-400/50 transition-all duration-200 block"
+                >
+                  <Image
+                    src={style.image}
+                    alt={style.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+
+                  {/* Dark gradient overlay for text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+
+                  {/* Style name overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <p className="text-sm font-semibold text-white group-hover:text-violet-400 transition-colors">
+                      {style.name}
+                    </p>
+                  </div>
+
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-violet-500/0 group-hover:bg-violet-500/10 transition-colors duration-200" />
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Additional styles grid */}
         <div className="space-y-6">
           {styleCategories.map((category, catIndex) => (
             <motion.div
@@ -81,10 +133,10 @@ export function StyleGallery() {
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: catIndex * 0.05, ease: 'easeOut' }}
+              transition={{ duration: 0.4, delay: 0.2 + catIndex * 0.05, ease: 'easeOut' }}
             >
               <p className="text-xs font-medium text-zinc-600 uppercase tracking-wider mb-3">{category.name}</p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {category.styles.map((style) => (
                   <Link
                     key={style.name}

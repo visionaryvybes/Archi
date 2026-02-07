@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visionary Studio — Image Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #09090b;
+            color: #f4f4f5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #a78bfa 0%, #f4f4f5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-subtitle {
+            font-size: 1rem;
+            color: #a1a1aa;
+            margin-bottom: 2rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background: #a78bfa;
+            color: #09090b;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        button:hover {
+            background: #c4b5fd;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(167, 139, 250, 0.3);
+        }
+
+        button:disabled {
+            background: #52525b;
+            color: #a1a1aa;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .progress-text {
+            font-size: 1rem;
+            color: #a78bfa;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #27272a;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #a78bfa, #c084fc);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: #18181b;
+            border: 1px solid #3f3f46;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: #a78bfa;
+            box-shadow: 0 0 20px rgba(167, 139, 250, 0.1);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #a78bfa;
+        }
+
+        .card-prompt {
+            font-size: 0.85rem;
+            color: #a1a1aa;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .image-preview {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #27272a;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .image-preview.square {
+            aspect-ratio: 1/1;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #3f3f46;
+            border-top-color: #a78bfa;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .card-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .card-buttons button {
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary {
+            background: #3f3f46;
+            color: #f4f4f5;
+        }
+
+        .btn-secondary:hover {
+            background: #52525b;
+        }
+
+        .status-text {
+            font-size: 0.8rem;
+            color: #71717a;
+            margin-top: 0.5rem;
+            min-height: 16px;
+        }
+
+        .status-text.success {
+            color: #86efac;
+        }
+
+        .status-text.error {
+            color: #f87171;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Visionary Studio</h1>
+            <p class="header-subtitle">AI Interior Design Image Generator</p>
+        </header>
+
+        <div class="controls">
+            <button id="generateAllBtn" onclick="generateAll()">Generate All Images</button>
+            <button id="downloadAllBtn" onclick="downloadAllAsZip()" disabled>Download All as ZIP</button>
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-text" id="progressText">0 of 14 generated</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="grid" id="grid"></div>
+    </div>
+
+    <script>
+        const API_KEY = 'AIzaSyBSqguO7KAYNIT-iwaG5KLZM_3pVL-ztN4';
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${API_KEY}`;
+
+        const images = [
+            {
+                id: 'hero-showcase',
+                filename: 'hero-showcase.jpg',
+                title: 'Hero Showcase',
+                aspect: '16:9',
+                prompt: 'PHOTOREALISTIC INTERIOR DESIGN PHOTOGRAPHY. A stunning modern living room split-screen transformation. Left half shows an empty unfurnished room with bare walls and concrete floor. Right half shows the SAME room fully designed in modern minimalist style with sleek sofa, walnut coffee table, statement lamp, abstract art, fiddle leaf fig, cream rug, warm golden hour light. Architectural Digest quality. 16:9 landscape.'
+            },
+            {
+                id: 'before-empty-living',
+                filename: 'before-empty-living.jpg',
+                title: 'Before: Empty Living',
+                aspect: '16:9',
+                prompt: 'PHOTOREALISTIC PHOTOGRAPHY of a completely empty unfurnished living room. Bare white walls, light hardwood flooring, two large windows with natural daylight, no furniture or decor. Clean empty space. Realistic real estate photography. 16:9 landscape.'
+            },
+            {
+                id: 'after-modern',
+                filename: 'after-modern.jpg',
+                title: 'After: Modern',
+                aspect: '16:9',
+                prompt: 'PHOTOREALISTIC INTERIOR DESIGN. A beautifully designed modern minimalist living room. Charcoal gray sectional sofa, walnut coffee table, brass arc floor lamp, large abstract art, fiddle leaf fig, cream wool rug, floating shelves, golden hour light through large windows, light hardwood floors. Architectural Digest quality. 16:9.'
+            },
+            {
+                id: 'after-scandinavian',
+                filename: 'after-scandinavian.jpg',
+                title: 'After: Scandinavian',
+                aspect: '1:1',
+                prompt: 'PHOTOREALISTIC INTERIOR DESIGN. A Scandinavian bedroom. Light birch bed frame with white linen, sheepskin throw, knitted pastels, pine bedside table with ceramic lamp, sage green accent wall, rattan pendant, botanical prints. Hygge atmosphere. 1:1 square.'
+            },
+            {
+                id: 'after-industrial',
+                filename: 'after-industrial.jpg',
+                title: 'After: Industrial',
+                aspect: '16:9',
+                prompt: 'PHOTOREALISTIC INTERIOR DESIGN. An industrial loft kitchen. Exposed brick walls, black steel windows, concrete floor, wood and steel island with marble top, Edison pendants, steel shelving, stainless appliances, copper accents, reclaimed wood stools. 16:9.'
+            },
+            {
+                id: 'after-japandi',
+                filename: 'after-japandi.jpg',
+                title: 'After: Japandi',
+                aspect: '1:1',
+                prompt: 'PHOTOREALISTIC INTERIOR DESIGN. A Japandi study/office. Low walnut desk, natural leather chair, shoji room divider, bonsai on shelf, ceramic tea set, minimal bookshelf, linen curtains, tatami-inspired rug, soft natural light, zen. 1:1 square.'
+            },
+            {
+                id: 'style-coastal',
+                filename: 'style-coastal.jpg',
+                title: 'Style: Coastal',
+                aspect: '1:1',
+                prompt: 'PHOTOREALISTIC INTERIOR DESIGN. Bright coastal living room. White shiplap, rope and driftwood, blue and sand palette, linen sofa, rattan table, ocean view, breezy curtains. Square 1:1.'
+            },
+            {
+                id: 'style-artdeco',
+                filename: 'style-artdeco.jpg',
+                title: 'Style: Art Deco',
+                aspect: '1:1',
+                prompt: 'PHOTOREALISTIC INTERIOR DESIGN. Art Deco lounge. Jewel tones emerald gold navy, geometric patterns, tufted green velvet sofa, chrome and gold, sunburst mirror, crystal chandelier, lacquered surfaces. Square 1:1.'
+            },
+            {
+                id: 'style-midcentury',
+                filename: 'style-midcentury.jpg',
+                title: 'Style: Mid-Century',
+                aspect: '1:1',
+                prompt: 'PHOTOREALISTIC INTERIOR DESIGN. Mid-century modern living room. Eames lounge chair, teak credenza, sunburst clock, mustard and teal accents, Nelson bubble lamp, geometric rug. Square 1:1.'
+            },
+            {
+                id: 'style-bohemian',
+                filename: 'style-bohemian.jpg',
+                title: 'Style: Bohemian',
+                aspect: '1:1',
+                prompt: 'PHOTOREALISTIC INTERIOR DESIGN. Bohemian living room. Layered textiles, jewel tones, macrame wall hanging, floor cushions, Moroccan rug, rattan peacock chair, trailing plants, gallery wall. Square 1:1.'
+            },
+            {
+                id: 'style-luxury',
+                filename: 'style-luxury.jpg',
+                title: 'Style: Luxury',
+                aspect: '1:1',
+                prompt: 'PHOTOREALISTIC INTERIOR DESIGN. Ultra-luxury penthouse living room. Floor-to-ceiling windows with city skyline, white marble, Italian leather sectional, gold accents, crystal chandelier, champagne palette. Square 1:1.'
+            },
+            {
+                id: 'style-rustic',
+                filename: 'style-rustic.jpg',
+                title: 'Style: Rustic',
+                aspect: '1:1',
+                prompt: 'PHOTOREALISTIC INTERIOR DESIGN. Rustic cabin living room. Exposed beams, stone fireplace with fire, reclaimed wood, leather armchair, wool throws, antler chandelier, mountain lodge warmth. Square 1:1.'
+            },
+            {
+                id: 'feature-speed',
+                filename: 'feature-speed.jpg',
+                title: 'Feature: Speed',
+                aspect: '16:9',
+                prompt: 'PHOTOREALISTIC split-screen showing an empty room on the left transforming into a beautifully designed modern interior on the right, with a subtle digital timer showing 28 seconds. Dark background. Tech marketing style. 16:9.'
+            },
+            {
+                id: 'feature-chat',
+                filename: 'feature-chat.jpg',
+                title: 'Feature: Chat',
+                aspect: '16:9',
+                prompt: 'PHOTOREALISTIC INTERIOR DESIGN showing three progressive versions of a living room side by side: first with blue sofa, second changed to green sofa, third with green sofa plus added plants. Showing AI iterative editing. 16:9.'
+            }
+        ];
+
+        const imageData = {};
+        let generatedCount = 0;
+
+        function initializeGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+
+            images.forEach((img) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.id = `card-${img.id}`;
+
+                const aspectClass = img.aspect === '1:1' ? 'square' : '';
+
+                card.innerHTML = `
+                    <div class="card-title">${img.title}</div>
+                    <div class="card-prompt">${img.prompt}</div>
+                    <div class="image-preview ${aspectClass}" id="preview-${img.id}">
+                        <div class="loading-spinner" style="display:none;"></div>
+                    </div>
+                    <div class="card-buttons">
+                        <button onclick="generateImage('${img.id}')">Generate</button>
+                        <button class="btn-secondary" onclick="downloadImage('${img.id}')" disabled id="dl-${img.id}">Download</button>
+                    </div>
+                    <div class="status-text" id="status-${img.id}"></div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        async function generateImage(imageId) {
+            const imageConfig = images.find(img => img.id === imageId);
+            if (!imageConfig) return;
+
+            const preview = document.getElementById(`preview-${imageId}`);
+            const spinner = preview.querySelector('.loading-spinner');
+            const statusEl = document.getElementById(`status-${imageId}`);
+            const dlBtn = document.getElementById(`dl-${imageId}`);
+
+            spinner.style.display = 'block';
+            statusEl.textContent = 'Generating...';
+            statusEl.className = 'status-text';
+            dlBtn.disabled = true;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                role: 'user',
+                                parts: [
+                                    {
+                                        text: imageConfig.prompt
+                                    }
+                                ]
+                            }
+                        ],
+                        generationConfig: {
+                            responseModalities: ['IMAGE', 'TEXT']
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) {
+                    const imagePart = data.candidates[0].content.parts.find(part => part.inlineData);
+
+                    if (imagePart && imagePart.inlineData && imagePart.inlineData.data) {
+                        const base64Data = imagePart.inlineData.data;
+                        const imageUrl = `data:image/jpeg;base64,${base64Data}`;
+
+                        imageData[imageId] = base64Data;
+
+                        const img = document.createElement('img');
+                        img.src = imageUrl;
+                        preview.innerHTML = '';
+                        preview.appendChild(img);
+
+                        generatedCount++;
+                        updateProgress();
+
+                        statusEl.textContent = 'Generated successfully';
+                        statusEl.className = 'status-text success';
+                        dlBtn.disabled = false;
+
+                        // Enable download all if all are generated
+                        if (generatedCount === images.length) {
+                            document.getElementById('downloadAllBtn').disabled = false;
+                        }
+                    } else {
+                        throw new Error('No image data in response');
+                    }
+                } else {
+                    throw new Error('Invalid API response structure');
+                }
+            } catch (error) {
+                console.error('Generation error:', error);
+                statusEl.textContent = `Error: ${error.message}`;
+                statusEl.className = 'status-text error';
+                spinner.style.display = 'none';
+            }
+        }
+
+        function updateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const percentage = (generatedCount / images.length) * 100;
+
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = `${generatedCount} of ${images.length} generated`;
+        }
+
+        async function generateAll() {
+            const btn = document.getElementById('generateAllBtn');
+            btn.disabled = true;
+            generatedCount = 0;
+
+            for (const image of images) {
+                await generateImage(image.id);
+                // Add a small delay between requests
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            btn.disabled = false;
+        }
+
+        function downloadImage(imageId) {
+            if (!imageData[imageId]) {
+                alert('No image generated yet');
+                return;
+            }
+
+            const imageConfig = images.find(img => img.id === imageId);
+            const link = document.createElement('a');
+            link.href = `data:image/jpeg;base64,${imageData[imageId]}`;
+            link.download = imageConfig.filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        async function downloadAllAsZip() {
+            if (generatedCount !== images.length) {
+                alert('Please generate all images first');
+                return;
+            }
+
+            const zip = new JSZip();
+
+            for (const image of images) {
+                if (imageData[image.id]) {
+                    const binaryData = atob(imageData[image.id]);
+                    const bytes = new Uint8Array(binaryData.length);
+                    for (let i = 0; i < binaryData.length; i++) {
+                        bytes[i] = binaryData.charCodeAt(i);
+                    }
+                    zip.file(image.filename, bytes);
+                }
+            }
+
+            const content = await zip.generateAsync({ type: 'blob' });
+            saveAs(content, 'visionary-studio-images.zip');
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeGrid();
+        });
+    </script>
+</body>
+</html>

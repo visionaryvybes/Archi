@@ -1,14 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Star } from 'lucide-react'
-import dynamic from 'next/dynamic'
-
-const HeroPlayer = dynamic(
-  () => import('@/components/remotion/HeroPlayer').then((mod) => mod.HeroPlayer),
-  { ssr: false, loading: () => <div className="w-full aspect-[16/10] rounded-2xl bg-zinc-900 border border-zinc-800 animate-pulse" /> }
-)
 
 const fadeIn = {
   hidden: { opacity: 0, y: 12 },
@@ -105,18 +100,27 @@ export function Hero() {
           No credit card required · Works in any browser · Results in &lt;30s
         </motion.p>
 
-        {/* Hero visual — Remotion animation */}
+        {/* Hero visual — Image showcase */}
         <motion.div
           className="relative"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
         >
-          {/* Glow behind the player */}
+          {/* Glow behind the image */}
           <div className="absolute -inset-4 bg-gradient-to-b from-violet-500/5 via-transparent to-transparent rounded-3xl blur-2xl pointer-events-none" />
 
-          <div className="relative rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl shadow-black/50">
-            <HeroPlayer />
+          <div className="relative rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl shadow-black/50 aspect-[16/10]">
+            <Image
+              src="/images/landing/hero-showcase.jpg"
+              alt="Room design transformation - before and after"
+              fill
+              objectFit="cover"
+              priority
+            />
+
+            {/* Gradient overlay at bottom for depth */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20" />
 
             {/* Labels overlay */}
             <div className="absolute top-4 left-4 px-3 py-1.5 rounded-lg bg-zinc-950/80 backdrop-blur-sm border border-zinc-800 text-xs text-zinc-400">
