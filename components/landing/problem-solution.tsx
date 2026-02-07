@@ -77,7 +77,7 @@ const visionaryWay = [
   { icon: <Zap className="w-5 h-5 text-white" />, text: 'Photorealistic results in 30 seconds' },
   { icon: <Sparkles className="w-5 h-5 text-white" />, text: 'No design experience required' },
   { icon: <RefreshCw className="w-5 h-5 text-white" />, text: 'Unlimited instant variations' },
-  { icon: <Image className="w-5 h-5 text-white" />, text: '50+ curated design styles' },
+  { icon: <Image className="w-5 h-5 text-white" />, text: '55+ curated design styles' },
 ]
 
 export function ProblemSolution() {

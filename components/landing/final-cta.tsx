@@ -209,7 +209,7 @@ export function FinalCTA() {
             viewport={{ once: true }}
             transition={{ delay: 0.5 }}
           >
-            {['5,000+ designers', 'Free tier available', '4.9 average rating'].map((item) => (
+            {['10,000+ designers', 'Free tier available', '4.9 average rating'].map((item) => (
               <div key={item} className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 <span>{item}</span>

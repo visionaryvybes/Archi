@@ -2,8 +2,14 @@ const { GoogleGenAI } = require("@google/genai");
 const fs = require("fs");
 const path = require("path");
 
-const API_KEY = "AIzaSyDT9fC7ppHN5K1zWpTFCeJf9zZQDB6Msts";
-const OUTPUT_DIR = "/Users/mac/visionary-studio-redesign/public/images";
+// Load API key from environment variable - NEVER hardcode API keys!
+const API_KEY = process.env.GEMINI_API_KEY || "";
+if (!API_KEY) {
+  console.error("ERROR: GEMINI_API_KEY environment variable is not set.");
+  console.error("Set it with: export GEMINI_API_KEY=your_key_here");
+  process.exit(1);
+}
+const OUTPUT_DIR = path.join(__dirname, "public/images");
 
 const genAI = new GoogleGenAI({ apiKey: API_KEY });
 

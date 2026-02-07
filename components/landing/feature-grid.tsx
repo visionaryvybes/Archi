@@ -27,7 +27,7 @@ const features: Feature[] = [
     id: 'api',
     icon: <Code className="w-6 h-6" />,
     title: 'API Access',
-    description: 'Full REST API with comprehensive documentation. Integrate Visionary into your apps.',
+    description: 'Full REST API with comprehensive documentation. Integrate Visionary Studio into your apps.',
     size: 'medium',
     highlight: true,
   },
@@ -49,8 +49,8 @@ const features: Feature[] = [
   {
     id: 'styles',
     icon: <Palette className="w-6 h-6" />,
-    title: '50+ Styles',
-    description: 'From Modern to Victorian, find the perfect style for any project.',
+    title: '55+ Styles',
+    description: 'From Modern to Victorian, Japandi to Art Deco — find the perfect style for any project.',
     size: 'small',
   },
   {
@@ -84,8 +84,8 @@ const features: Feature[] = [
   {
     id: 'gpu',
     icon: <Cpu className="w-6 h-6" />,
-    title: 'GPU Clusters',
-    description: 'Powered by enterprise-grade GPU infrastructure for consistent performance.',
+    title: 'Nano Banana Pro Engine',
+    description: 'Powered by Google\'s most advanced Gemini image generation model for unmatched quality.',
     size: 'small',
   },
 ];

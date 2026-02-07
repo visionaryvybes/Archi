@@ -15,11 +15,11 @@ const faqs: FAQItem[] = [
     id: 'faq-1',
     question: 'How does the AI interior design work?',
     answer:
-      'Our AI analyzes your room photo and understands the spatial layout, existing furniture, and architectural elements. It then applies your chosen design style while preserving the room structure. The process uses Google\'s Gemini 2.0 multimodal AI to generate photorealistic results in under 10 seconds.',
+      'Our AI analyzes your room photo and understands the spatial layout, existing furniture, and architectural elements. It then applies your chosen design style while preserving the room structure. The process uses Google\'s Nano Banana Pro (Gemini) multimodal AI to generate photorealistic results in seconds.',
   },
   {
     id: 'faq-2',
-    question: 'Can I use Visionary for commercial projects?',
+    question: 'Can I use Visionary Studio for commercial projects?',
     answer:
       'Absolutely! Pro and Enterprise plans include commercial usage rights. You can use generated images for client presentations, marketing materials, and portfolio showcases. Enterprise customers also get custom licensing options for specific use cases.',
   },
@@ -110,7 +110,7 @@ export function FAQ() {
             <span className="gradient-text">Questions</span>
           </h2>
           <p className="text-lg text-slate-400">
-            Everything you need to know about Visionary.
+            Everything you need to know about Visionary Studio.
           </p>
         </motion.div>
 

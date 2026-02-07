@@ -167,7 +167,7 @@ export function Footer() {
           transition={{ delay: 0.5 }}
         >
           <p className="text-xs text-slate-600">
-            Built with care in San Francisco. Powered by Google Gemini.
+            Built with care in San Francisco. Powered by Nano Banana Pro.
           </p>
         </motion.div>
       </div>

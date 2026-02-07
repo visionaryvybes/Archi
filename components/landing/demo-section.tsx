@@ -230,8 +230,8 @@ export function DemoSection() {
             <span className="gradient-text">Free, no sign-up required.</span>
           </h2>
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            See the power of AI-driven design in action. Upload a room photo and
-            transform it instantly.
+            See the power of Nano Banana Pro in action. Upload a room photo and
+            transform it instantly with AI.
           </p>
 
           {/* Demo limit indicator */}

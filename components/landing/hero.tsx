@@ -124,7 +124,7 @@ export function Hero() {
                 <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/10">
                   <Sparkles className="w-4 h-4 text-emerald-400" />
                   <span className="shimmer-text text-sm font-medium font-mono">
-                    Powered by Google Gemini 2.0
+                    Powered by Nano Banana Pro
                   </span>
                 </span>
               </motion.div>
@@ -158,7 +158,7 @@ export function Hero() {
                 transition={{ delay: 0.8 }}
               >
                 Transform empty rooms into stunning, photorealistic interiors with AI.
-                The only design tool powered by Google&apos;s most advanced AI model.
+                55+ styles, 8 AI modes, and conversational editing — powered by Nano Banana Pro.
               </motion.p>
 
               {/* CTAs */}

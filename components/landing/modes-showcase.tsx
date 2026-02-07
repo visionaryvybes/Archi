@@ -23,13 +23,13 @@ const modes: Mode[] = [
     icon: <Image className="w-5 h-5" />,
     title: 'Stunning Room Renders',
     description:
-      'Transform any room photo into a beautifully redesigned space. Upload your image and watch as AI reimagines it in your chosen style.',
+      'Transform any room photo into a beautifully redesigned space with Nano Banana Pro. Upload your image and watch as AI reimagines it in your chosen style.',
     features: [
       '4K resolution output',
-      '50+ design styles',
-      'Preserve room structure',
-      'Instant style preview',
-      'Batch processing support',
+      '55+ design styles',
+      '8 AI generation modes',
+      'Conversational AI editing',
+      'Inpaint, outpaint & style transfer',
     ],
     cta: 'Generate Images',
     preview: <ImageModePreview />,
