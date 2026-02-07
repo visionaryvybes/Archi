@@ -54,8 +54,7 @@ async function generateImage(prompt, filename) {
   }
 }
 
-// Delay between requests to avoid rate limiting
-function delay(ms) { return new Promise(r => setTimeout(r, ms)) }
+// No rate limit delay needed - paid Google subscription
 
 // ===== IMAGE DEFINITIONS =====
 const images = [
@@ -178,11 +177,7 @@ async function main() {
     if (ok) success++
     else failed++
 
-    // Rate limit delay (2s between requests)
-    if (i < images.length - 1) {
-      console.log('   ⏳ Waiting 2s for rate limit...')
-      await delay(2000)
-    }
+    // No delay needed - paid subscription
   }
 
   console.log(`\n\n════════════════════════════════`)

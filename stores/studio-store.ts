@@ -205,8 +205,8 @@ export const useStudioStore = create<StudioState>()(
       recentRenders: [],
 
       // Initial Usage State
-      rendersUsedThisMonth: 47,
-      renderLimit: 1000,
+      rendersUsedThisMonth: 0,
+      renderLimit: Infinity,
 
       // UI Actions
       setRightPanelOpen: (open) => set({ rightPanelOpen: open }),

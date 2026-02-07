@@ -111,13 +111,30 @@ export function Hero() {
           <div className="absolute -inset-4 bg-gradient-to-b from-violet-500/5 via-transparent to-transparent rounded-3xl blur-2xl pointer-events-none" />
 
           <div className="relative rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl shadow-black/50 aspect-[16/10]">
-            <Image
-              src="/images/landing/hero-showcase.jpg"
-              alt="Room design transformation - before and after"
-              fill
-              objectFit="cover"
-              priority
-            />
+            <div className="absolute inset-0 grid grid-cols-2 gap-0">
+              {/* Before image */}
+              <div className="relative overflow-hidden">
+                <Image
+                  src="/images/landing/before-empty.jpg"
+                  alt="Empty room - before design"
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+              {/* After image */}
+              <div className="relative overflow-hidden">
+                <Image
+                  src="/images/landing/after-modern.jpg"
+                  alt="Modern room - after design"
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+            </div>
 
             {/* Gradient overlay at bottom for depth */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20" />

@@ -3,43 +3,10 @@ import { generateImage, chatEdit, enhancePrompt } from '@/lib/gemini'
 import type { GenerationMode } from '@/lib/types'
 
 // ============================================================
-// Rate Limiting (simple in-memory for demo)
-// ============================================================
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
-const RATE_LIMIT = parseInt(process.env.DEMO_RATE_LIMIT || '100')
-const RATE_WINDOW = 60 * 60 * 1000 // 1 hour
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const record = rateLimitMap.get(ip)
-
-  if (!record || now > record.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW })
-    return true
-  }
-
-  if (record.count >= RATE_LIMIT) {
-    return false
-  }
-
-  record.count++
-  return true
-}
-
-// ============================================================
 // POST /api/generate - Main generation endpoint
 // ============================================================
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting
-    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
-    if (!checkRateLimit(ip)) {
-      return NextResponse.json(
-        { success: false, error: 'Rate limit exceeded. Please try again later.' },
-        { status: 429 }
-      )
-    }
-
     // Check API key
     if (!process.env.GEMINI_API_KEY) {
       return NextResponse.json(

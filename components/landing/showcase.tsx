@@ -9,25 +9,25 @@ const transformations = [
   {
     name: 'Modern Minimalist',
     room: 'Living Room',
-    beforeImage: '/images/landing/before-empty-living.jpg',
+    beforeImage: '/images/landing/before-empty.jpg',
     afterImage: '/images/landing/after-modern.jpg',
   },
   {
     name: 'Scandinavian',
     room: 'Bedroom',
-    beforeImage: '/images/landing/before-empty-living.jpg',
+    beforeImage: '/images/landing/before-empty.jpg',
     afterImage: '/images/landing/after-scandinavian.jpg',
   },
   {
     name: 'Industrial Loft',
     room: 'Kitchen',
-    beforeImage: '/images/landing/before-empty-living.jpg',
+    beforeImage: '/images/landing/before-empty.jpg',
     afterImage: '/images/landing/after-industrial.jpg',
   },
   {
     name: 'Japandi',
     room: 'Study',
-    beforeImage: '/images/landing/before-empty-living.jpg',
+    beforeImage: '/images/landing/before-empty.jpg',
     afterImage: '/images/landing/after-japandi.jpg',
   },
 ]

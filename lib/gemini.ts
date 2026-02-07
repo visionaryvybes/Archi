@@ -197,11 +197,10 @@ export interface GenerateImageResult {
   generationTime: number
 }
 
-// Retry logic with exponential backoff
+// Retry logic for server errors (no rate limiting - paid subscription)
 async function withRetry<T>(
   fn: () => Promise<T>,
-  maxRetries: number = 3,
-  baseDelay: number = 1000
+  maxRetries: number = 5
 ): Promise<T> {
   let lastError: Error | null = null
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -210,14 +209,10 @@ async function withRetry<T>(
     } catch (error: unknown) {
       lastError = error instanceof Error ? error : new Error(String(error))
       const statusCode = (error as { status?: number })?.status
-      // Only retry on rate limit (429) or server errors (5xx)
-      if (statusCode === 429 || (statusCode && statusCode >= 500)) {
-        if (attempt < maxRetries) {
-          const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000
-          console.log(`Retry attempt ${attempt + 1}/${maxRetries} after ${Math.round(delay)}ms...`)
-          await new Promise(resolve => setTimeout(resolve, delay))
-          continue
-        }
+      // Retry on server errors (5xx) only
+      if (statusCode && statusCode >= 500 && attempt < maxRetries) {
+        console.log(`Retry attempt ${attempt + 1}/${maxRetries}...`)
+        continue
       }
       throw error
     }

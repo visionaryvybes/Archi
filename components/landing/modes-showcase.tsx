@@ -13,12 +13,13 @@ const steps = [
     visual: (
       <div className="mt-5 aspect-[4/3] rounded-lg border border-dashed border-zinc-700 bg-zinc-900/50 relative overflow-hidden">
         <Image
-          src="/images/landing/before-empty-living.jpg"
+          src="/images/landing/before-empty.jpg"
           alt="Empty room upload preview"
           fill
           className="object-cover"
           quality={85}
           priority={false}
+          sizes="(max-width: 768px) 100vw, 33vw"
         />
       </div>
     ),
@@ -66,6 +67,7 @@ const steps = [
           className="object-cover"
           quality={85}
           priority={false}
+          sizes="(max-width: 768px) 100vw, 33vw"
         />
         <div className="absolute top-2 right-2 px-2 py-1 rounded text-[9px] bg-violet-500/20 text-violet-300 border border-violet-500/30">
           4K Ready
