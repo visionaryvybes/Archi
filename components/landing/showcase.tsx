@@ -15,19 +15,19 @@ const transformations = [
   {
     name: 'Scandinavian',
     room: 'Bedroom',
-    beforeImage: '/images/landing/before-empty.jpg',
+    beforeImage: '/images/landing/before-bedroom.jpg',
     afterImage: '/images/landing/after-scandinavian.jpg',
   },
   {
     name: 'Industrial Loft',
     room: 'Kitchen',
-    beforeImage: '/images/landing/before-empty.jpg',
+    beforeImage: '/images/landing/before-kitchen.jpg',
     afterImage: '/images/landing/after-industrial.jpg',
   },
   {
     name: 'Japandi',
     room: 'Study',
-    beforeImage: '/images/landing/before-empty.jpg',
+    beforeImage: '/images/landing/before-study.jpg',
     afterImage: '/images/landing/after-japandi.jpg',
   },
 ]

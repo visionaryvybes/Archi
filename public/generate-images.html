@@ -260,7 +260,7 @@
     </div>
 
     <script>
-        const API_KEY = 'AIzaSyBSqguO7KAYNIT-iwaG5KLZM_3pVL-ztN4';
+        const API_KEY = prompt('Enter your Gemini API key:') || '';
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${API_KEY}`;
 
         const images = [

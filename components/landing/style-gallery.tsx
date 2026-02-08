@@ -18,32 +18,32 @@ const styleCategories = [
   {
     name: 'Modern',
     styles: [
-      { name: 'Modern Minimalist', color: 'from-zinc-700 to-zinc-900' },
-      { name: 'Contemporary', color: 'from-slate-600 to-slate-800' },
-      { name: 'Urban Loft', color: 'from-stone-600 to-stone-800' },
+      { name: 'Modern Minimalist', image: '/images/landing/style-modern.jpg' },
+      { name: 'Contemporary', image: '/images/landing/style-contemporary.jpg' },
+      { name: 'Urban Loft', image: '/images/landing/style-urban-loft.jpg' },
     ],
   },
   {
     name: 'Natural',
     styles: [
-      { name: 'Scandinavian', color: 'from-stone-200 to-stone-400' },
-      { name: 'Japandi', color: 'from-stone-400 to-neutral-600' },
+      { name: 'Scandinavian', image: '/images/landing/style-scandinavian.jpg' },
+      { name: 'Japandi', image: '/images/landing/style-japandi.jpg' },
     ],
   },
   {
     name: 'Classic',
     styles: [
-      { name: 'Victorian', color: 'from-rose-700 to-rose-900' },
-      { name: 'French Country', color: 'from-violet-300 to-violet-500' },
-      { name: 'Mediterranean', color: 'from-orange-400 to-orange-600' },
+      { name: 'Victorian', image: '/images/landing/style-victorian.jpg' },
+      { name: 'French Country', image: '/images/landing/style-french-country.jpg' },
+      { name: 'Mediterranean', image: '/images/landing/style-mediterranean.jpg' },
     ],
   },
   {
     name: 'Bold',
     styles: [
-      { name: 'Industrial', color: 'from-zinc-500 to-zinc-700' },
-      { name: 'Maximalist', color: 'from-fuchsia-500 to-purple-700' },
-      { name: 'Tropical', color: 'from-emerald-400 to-teal-600' },
+      { name: 'Industrial', image: '/images/landing/style-industrial.jpg' },
+      { name: 'Maximalist', image: '/images/landing/style-maximalist.jpg' },
+      { name: 'Tropical', image: '/images/landing/style-tropical.jpg' },
     ],
   },
 ]
@@ -143,18 +143,14 @@ export function StyleGallery() {
                     href="/studio"
                     className="group relative aspect-[3/2] rounded-xl overflow-hidden border border-zinc-800 hover:border-violet-500/30 transition-all duration-200"
                   >
-                    <div className={`absolute inset-0 bg-gradient-to-br ${style.color}`} />
+                    <Image
+                      src={style.image}
+                      alt={style.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 50vw, 33vw"
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-
-                    {/* Mini room silhouette */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                      <svg viewBox="0 0 100 80" className="w-16 h-12" fill="none" stroke="currentColor" strokeWidth={0.5}>
-                        <rect x="10" y="10" width="80" height="50" rx="1" className="text-white/40" />
-                        <rect x="35" y="15" width="30" height="20" rx="1" className="text-white/30" />
-                        <rect x="15" y="40" width="30" height="15" rx="2" className="text-white/30" />
-                        <circle cx="70" cy="45" r="8" className="text-white/20" />
-                      </svg>
-                    </div>
 
                     <div className="absolute bottom-0 left-0 right-0 p-3">
                       <p className="text-sm font-medium text-white/90 group-hover:text-white transition-colors">

@@ -8,7 +8,8 @@ import { GoogleGenAI } from '@google/genai'
 import { writeFileSync, mkdirSync, existsSync } from 'fs'
 import { join } from 'path'
 
-const API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyBSqguO7KAYNIT-iwaG5KLZM_3pVL-ztN4'
+const API_KEY = process.env.GEMINI_API_KEY || ''
+if (!API_KEY) { console.error('Set GEMINI_API_KEY env var'); process.exit(1) }
 const genAI = new GoogleGenAI({ apiKey: API_KEY })
 const MODEL = 'gemini-2.0-flash-exp'
 

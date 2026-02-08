@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { Layers, MessageSquare, Palette, Zap, Shield, Maximize2 } from 'lucide-react'
 
 const features = [
@@ -8,50 +9,22 @@ const features = [
     icon: Zap,
     title: 'Renders in under 30 seconds',
     description: 'Upload → style → render. No waiting in queues, no GPU setup, no complex software. Just fast, photorealistic results every time.',
-    visual: (
-      <div className="mt-4 flex items-center gap-2">
-        <div className="flex-1 h-2 rounded-full bg-zinc-800 overflow-hidden">
-          <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500"
-            initial={{ width: '0%' }}
-            whileInView={{ width: '90%' }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.5, delay: 0.3, ease: 'easeOut' }}
-          />
-        </div>
-        <span className="text-xs text-zinc-500 tabular-nums">~28s</span>
-      </div>
-    ),
+    image: '/images/landing/feature-speed.jpg',
+    imageAlt: 'Before and after room transformation',
   },
   {
     icon: Palette,
     title: '55+ curated design styles',
     description: 'Modern, Scandinavian, Industrial, Japandi, Art Deco, Bohemian, and dozens more. Each style trained on thousands of real interior photos.',
-    visual: (
-      <div className="mt-4 flex gap-1.5">
-        {['#a78bfa', '#f59e0b', '#06b6d4', '#10b981', '#ef4444', '#ec4899'].map((c) => (
-          <div key={c} className="w-6 h-6 rounded-md" style={{ background: c, opacity: 0.7 }} />
-        ))}
-        <div className="w-6 h-6 rounded-md border border-zinc-700 flex items-center justify-center text-[9px] text-zinc-500">
-          +49
-        </div>
-      </div>
-    ),
+    image: '/images/landing/feature-styles.jpg',
+    imageAlt: 'Grid of different interior design styles',
   },
   {
     icon: MessageSquare,
     title: 'Edit with natural language',
     description: '"Make it warmer." "Remove the rug." "Add a fireplace." Refine any render with plain English — no sliders or controls needed.',
-    visual: (
-      <div className="mt-4 space-y-2">
-        <div className="inline-block px-3 py-1.5 rounded-lg bg-zinc-800 text-xs text-zinc-400">
-          &ldquo;Make the sofa darker&rdquo;
-        </div>
-        <div className="inline-block px-3 py-1.5 rounded-lg bg-violet-500/10 border border-violet-500/20 text-xs text-violet-300">
-          Updated — sofa color adjusted
-        </div>
-      </div>
-    ),
+    image: '/images/landing/feature-chat.jpg',
+    imageAlt: 'AI-refined interior design',
   },
   {
     icon: Layers,
@@ -71,26 +44,8 @@ const features = [
     icon: Maximize2,
     title: 'Up to 4K resolution',
     description: 'Print-ready 4096×4096 output. Perfect for client presentations, portfolios, and marketing materials that need to look sharp at any size.',
-    visual: (
-      <div className="mt-4 flex items-center gap-3">
-        {[
-          { label: '1K', active: false },
-          { label: '2K', active: false },
-          { label: '4K', active: true },
-        ].map((r) => (
-          <div
-            key={r.label}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium ${
-              r.active
-                ? 'bg-violet-500/10 text-violet-400 border border-violet-500/30'
-                : 'text-zinc-600 border border-zinc-800'
-            }`}
-          >
-            {r.label}
-          </div>
-        ))}
-      </div>
-    ),
+    image: '/images/landing/feature-4k.jpg',
+    imageAlt: 'Ultra-detailed material close-up showing 4K quality',
   },
   {
     icon: Shield,
@@ -138,18 +93,34 @@ export function GeminiShowcase() {
             return (
               <motion.div
                 key={feature.title}
-                className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-6 hover:border-zinc-700 hover:bg-zinc-900/50 transition-all duration-200"
+                className="rounded-xl border border-zinc-800 bg-zinc-900/30 overflow-hidden hover:border-zinc-700 hover:bg-zinc-900/50 transition-all duration-200"
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.4, delay: index * 0.06, ease: 'easeOut' }}
               >
-                <div className="w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-4">
-                  <Icon className="w-5 h-5 text-violet-400" />
+                {/* Feature image */}
+                {feature.image && (
+                  <div className="relative aspect-[2/1] overflow-hidden">
+                    <Image
+                      src={feature.image}
+                      alt={feature.imageAlt || feature.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-zinc-900/80" />
+                  </div>
+                )}
+
+                <div className="p-6">
+                  <div className="w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-4">
+                    <Icon className="w-5 h-5 text-violet-400" />
+                  </div>
+                  <h3 className="text-base font-medium text-zinc-50 mb-2">{feature.title}</h3>
+                  <p className="text-sm text-zinc-500 leading-relaxed">{feature.description}</p>
+                  {feature.visual}
                 </div>
-                <h3 className="text-base font-medium text-zinc-50 mb-2">{feature.title}</h3>
-                <p className="text-sm text-zinc-500 leading-relaxed">{feature.description}</p>
-                {feature.visual}
               </motion.div>
             )
           })}

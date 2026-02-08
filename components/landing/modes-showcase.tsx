@@ -32,12 +32,12 @@ const steps = [
     visual: (
       <div className="mt-5 grid grid-cols-3 gap-1.5">
         {[
-          { name: 'Coastal', src: '/images/landing/style-coastal.jpg' },
+          { name: 'Modern', src: '/images/landing/style-modern.jpg' },
+          { name: 'Scandinavian', src: '/images/landing/style-scandinavian.jpg' },
+          { name: 'Industrial', src: '/images/landing/style-industrial.jpg' },
+          { name: 'Japandi', src: '/images/landing/style-japandi.jpg' },
           { name: 'Art Deco', src: '/images/landing/style-artdeco.jpg' },
-          { name: 'Mid-Century', src: '/images/landing/style-midcentury.jpg' },
-          { name: 'Bohemian', src: '/images/landing/style-bohemian.jpg' },
-          { name: 'Luxury', src: '/images/landing/style-luxury.jpg' },
-          { name: 'Rustic', src: '/images/landing/style-rustic.jpg' },
+          { name: 'Tropical', src: '/images/landing/style-tropical.jpg' },
         ].map((s) => (
           <div key={s.name} className="relative aspect-square rounded-md overflow-hidden border border-zinc-700 hover:border-violet-500/50 transition-colors">
             <Image
@@ -61,8 +61,8 @@ const steps = [
     visual: (
       <div className="mt-5 aspect-[4/3] rounded-lg overflow-hidden border border-violet-500/20 relative">
         <Image
-          src="/images/landing/after-modern.jpg"
-          alt="Rendered room result"
+          src="/images/landing/hero-showcase.jpg"
+          alt="AI-rendered modern living room"
           fill
           className="object-cover"
           quality={85}

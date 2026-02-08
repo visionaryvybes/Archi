@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronDown, Upload, Maximize2, Sparkles, Image as ImageIcon,
   MessageSquare, Send, Loader2, X, Download, RotateCcw,
-  Wand2, PenTool, Eraser, Expand, Palette, ArrowLeftRight,
+  Wand2, PenTool, Eraser, Expand, Palette,
   Type, Sun, Layers, Clock, ChevronRight, Zap, Search
 } from 'lucide-react'
-import { LoadingAnimation } from '@/components/studio/loading-animation'
+import Image from 'next/image'
 import {
   STYLES, RENDER_TYPES, ROOM_TYPES, GENERATION_MODES,
   TIME_OF_DAY_OPTIONS, SEASON_OPTIONS,
@@ -416,14 +416,21 @@ export default function StudioPage() {
               <AnimatePresence mode="wait">
                 {state === 'idle' && (
                   <motion.div key="idle" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                    className="aspect-video rounded-xl border border-zinc-800/60 bg-zinc-900/30 flex items-center justify-center">
-                    <div className="text-center space-y-4">
-                      <div className="w-14 h-14 rounded-xl bg-zinc-800/50 flex items-center justify-center mx-auto">
-                        <Sparkles size={24} className="text-zinc-600" />
+                    className="relative aspect-video rounded-xl border border-zinc-800/60 overflow-hidden flex items-center justify-center">
+                    <Image
+                      src="/images/landing/studio-welcome.jpg"
+                      alt="Studio background"
+                      fill
+                      className="object-cover opacity-30"
+                      priority
+                    />
+                    <div className="relative text-center space-y-4">
+                      <div className="w-14 h-14 rounded-xl bg-zinc-800/80 backdrop-blur-sm flex items-center justify-center mx-auto">
+                        <Sparkles size={24} className="text-violet-400" />
                       </div>
                       <div>
-                        <p className="text-[14px] font-medium text-zinc-400">Ready to generate</p>
-                        <p className="text-[12px] text-zinc-600 mt-1">
+                        <p className="text-[14px] font-medium text-zinc-300">Ready to generate</p>
+                        <p className="text-[12px] text-zinc-500 mt-1">
                           {STYLES.length} styles · {RENDER_TYPES.length} render types · {GENERATION_MODES.length} modes
                         </p>
                       </div>
